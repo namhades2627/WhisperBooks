@@ -1,0 +1,114 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<main class="container mt-5 mb-5">
+    <div class="row bg-white p-4 shadow-sm rounded">
+        <div class="col-md-5 text-center">
+            <img src="/images/<%= s.HinhAnh %>" class="img-fluid rounded shadow" style="max-height: 500px;" alt="<%= s.TenSach %>">
+        </div>
+
+        <div class="col-md-7">
+            <h2 class="fw-bold mb-3"><%= s.TenSach %></h2>
+            
+            <div class="d-flex align-items-center mb-3">
+                <span class="text-danger fs-3 fw-bold me-3"><%= s.GiaBan.toLocaleString() %>đ</span>
+            </div>
+
+            <div class="mb-4 p-3 bg-light rounded">
+                <p class="mb-2"><strong>Nhà cung cấp:</strong> <span class="text-primary"><%= s.NhaCungCap %></span></p>
+                <p class="mb-0"><strong>Thể loại:</strong> <span class="text-primary"><%= s.TheLoai ? s.TheLoai.TenTheLoai : 'Đang cập nhật' %></span></p>
+            </div>
+
+            <p class="text-muted mb-4"><strong>Tình trạng:</strong> <%= s.SoLuong > 0 ? 'Còn hàng' : 'Hết hàng' %></p>
+
+            <div class="d-flex align-items-center mb-4">
+                <span class="me-3 fw-bold">SỐ LƯỢNG:</span>
+                <div class="input-group" style="width: 130px;">
+                    <button class="btn btn-outline-secondary px-3" type="button" onclick="changeQty(-1)">-</button>
+                    <input type="text" id="soluong" class="form-control text-center bg-white" value="1" readonly>
+                    <button class="btn btn-outline-secondary px-3" type="button" onclick="changeQty(1)">+</button>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+                <% if (user) { %>
+                    <button onclick="addToCart('<%= s._id %>', '<%= s.TenSach %>', '<%= s.GiaBan %>', '<%= s.HinhAnh %>')" 
+                            class="btn btn-outline-primary btn-lg px-4 fw-bold">
+                        <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
+                    </button>
+                    <button onclick="handleBuyNow('<%= s._id %>', '<%= s.TenSach %>', '<%= s.GiaBan %>', '<%= s.HinhAnh %>')" 
+                            class="btn btn-danger btn-lg px-4 fw-bold">
+                        Mua ngay
+                    </button>
+                <% } else { %>
+                    <button onclick="alertLogin()" class="btn btn-outline-primary btn-lg px-4 fw-bold">
+                        <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
+                    </button>
+                    <button onclick="alertLogin()" class="btn btn-danger btn-lg px-4 fw-bold">
+                        Mua ngay
+                    </button>
+                <% } %>
+            </div>
+    
+            <div class="border-top pt-4">
+                <h5 class="fw-bold">Mô tả sách</h5>
+                <div class="text-justify mt-2">
+                    <%- s.MoTa %>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<%- include('footer') %>
+<script>
+    // 1. Hàm tăng giảm số lượng
+    function changeQty(amt) {
+        var qtyInput = document.getElementById('soluong');
+        var currentQty = parseInt(qtyInput.value);
+        var newQty = currentQty + amt;
+        
+        // Lấy số lượng tồn kho từ server truyền xuống
+        var maxQty = parseInt('<%= s.SoLuong %>'); 
+        
+        if (newQty > 0 && newQty <= maxQty) {
+            qtyInput.value = newQty;
+        }
+    }
+
+    // 2. Hàm gom dữ liệu sản phẩm
+    function getProductData() {
+        return {
+            id: '<%= s._id %>',
+            ten: '<%= s.TenSach %>',
+            gia: parseInt('<%= s.GiaBan %>'),
+            hinh: '<%= s.HinhAnh %>',
+            quantity: parseInt(document.getElementById('soluong').value)
+        };
+    }
+
+    // 3. Xử lý Thêm giỏ hàng
+    function handleAddToCart() {
+        var p = getProductData();
+        if (typeof addToCart === "function") {
+            addToCart(p.id, p.ten, p.gia, p.hinh, p.quantity);
+        } else {
+            alert("Lỗi: Không tìm thấy file cart.js!");
+        }
+    }
+
+    // 4. Xử lý Mua ngay
+    function handleBuyNow() {
+        var p = getProductData();
+        if (typeof proceedToCheckout === "function") {
+            proceedToCheckout('single', p);
+        } else {
+            alert("Lỗi: Không tìm thấy file cart.js!");
+        }
+    }
+    
+    function alertLogin() {
+    alert("Vui lòng đăng nhập để mua hàng hoặc thêm sản phẩm vào giỏ hàng!");
+    window.location.href = '/dangnhap';
+    }
+</script>

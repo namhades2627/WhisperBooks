@@ -1,0 +1,62 @@
+<%- include('../header') %>
+<%- include('../navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('sidebar') %>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
+            <h2 class="fw-bold text-uppercase mb-4">Thêm sách mới</h2>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form action="/admin/sach/them" method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Tên sách</label>
+                                <input type="text" name="TenSach" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Nhà cung cấp</label>
+                                <input type="text" name="NhaCungCap" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Thể loại</label>
+                                <select name="TheLoai" class="form-select">
+                                    <% dsTheLoai.forEach(tl => { %>
+                                        <option value="<%= tl._id %>"><%= tl.TenTheLoai %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Giá bán</label>
+                                <input type="text" name="GiaBan" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Số lượng</label>
+                                <input type="text" name="SoLuong" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Hình ảnh (tên file)</label>
+                                <input type="text" name="HinhAnh" class="form-control" placeholder="vi-du.jpg">
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Mô tả sách</label>
+                                    <textarea name="MoTa" class="form-control" rows="3" placeholder="Nhập tóm tắt nội dung sách..."></textarea>
+                                </div>
+                                <script>
+                                    CKEDITOR.replace('MoTa');
+                            </script>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <a href="/admin/sach" class="btn btn-secondary me-2">Hủy</a>
+                            <button type="submit" class="btn btn-warning fw-bold">Lưu sách</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

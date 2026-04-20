@@ -1,0 +1,69 @@
+<footer class="mt-5 bg-dark text-white pt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <h5 class="fw-bold text-uppercase mb-4">Nhà của Whisper Books</h5>
+                <div id="map" style="width: 100%; height: 180px; border-radius: 8px; border: 1px solid #444;"></div>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h5 class="fw-bold text-uppercase mb-4">WHISPER BOOKS</h5>
+                <p class="small text-secondary">Cung cấp hàng ngàn đầu sách đa dạng thể loại, từ văn học đến khoa học kỹ thuật. Tri thức của bạn là sứ mệnh của chúng tôi.</p>
+            </div>
+
+            <div class="col-md-3 mb-4">
+                <h5 class="fw-bold text-uppercase mb-4">LIÊN HỆ</h5>
+                <ul class="list-unstyled small text-secondary">
+                    <li class="mb-2"><i class="bi bi-geo-alt-fill me-2 text-primary"></i> Long Xuyên, An Giang</li>
+                    <li class="mb-2"><i class="bi bi-envelope-fill me-2 text-primary"></i> nam_dth235702@student.agu.edu.vn</li>
+                    <li><i class="bi bi-telephone-fill me-2 text-primary"></i> 0123.456.789</li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 text-md-end">
+                <h5 class="fw-bold text-uppercase mb-4">THEO DÕI</h5>
+                <div class="d-flex justify-content-md-end gap-3">
+                    <a href="https://www.facebook.com/nhutnam.tong.7" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+                    <a href="https://www.youtube.com/@NhanamVideoChannel" class="text-danger fs-4"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.tiktok.com/@nhanam59" class="text-white fs-4"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <hr class="my-4 border-secondary">
+        <div class="text-center small text-secondary pb-3">
+            © 2026 Whisper Books - Tống Nhựt Nam - DTH235702 - Nhóm 59
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var lat = 10.3724;
+        var lng = 105.4322;
+
+        var map = L.map('map').setView([lat, lng], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        var marker = L.marker([lat, lng]).addTo(map);
+
+        // Tạo link dẫn sang Google Maps với tọa độ chính xác
+        var googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+        // Cập nhật nội dung Popup: Thêm link nhấn vào để mở Google Maps
+        marker.bindPopup(`
+            <div style="text-align: center;">
+                Đại học An Giang<br>
+                <a href="${googleMapsUrl}" target="_blank" style="text-decoration: none; color: #dc3545; font-weight: bold;">
+                    <i class="bi bi-geo-alt"></i> 
+                </a>
+            </div>
+        `).openPopup();
+    });
+</script>
+</footer>

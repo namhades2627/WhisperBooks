@@ -1,0 +1,73 @@
+<%- include('../header') %>
+<%- include('../navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('sidebar') %>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-light pb-5">
+            <% if (success) { %>
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <i class="bi bi-check-circle me-2"></i><%= success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 fw-bold text-uppercase">Danh sách Sách</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/sach/them" class="btn btn-warning fw-bold shadow-sm">
+                        <i class="bi bi-plus-lg"></i> Thêm sách mới
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive bg-white shadow-sm rounded">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Hình ảnh</th>
+                            <th>Tên sách</th>
+                            <th>Thể loại</th>
+                            <th>Giá bán</th>
+                            <th>Số lượng</th>
+                            <th class="text-end pe-3">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% dsSach.forEach(s => { %>
+                        <tr>
+                            <td class="ps-3">
+                                <img src="/images/<%= s.HinhAnh %>" alt="<%= s.TenSach %>" width="50" class="rounded shadow-sm">
+                            </td>
+                            <td>
+                                <div class="fw-bold text-primary"><%= s.TenSach %></div>
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <%= s.TheLoai ? s.TheLoai.TenTheLoai : 'Chưa phân loại' %>
+                                </span>
+                            </td>
+                            <td class="fw-bold text-danger">
+                                <%= s.GiaBan.toLocaleString('vi-VN') %>đ
+                            </td>
+                            <td><%= s.SoLuong %></td>
+                            <td class="text-end pe-3">
+                                <a href="/admin/sach/sua/<%= s._id %>" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a href="/admin/sach/xoa/<%= s._id %>" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   title="Xóa"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa cuốn sách: <%= s.TenSach %>?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+[
+  { "TenTheLoai": "Hành động", "TenTheLoaiKhongDau": "hanh-dong" },
+  { "TenTheLoai": "Hài hước", "TenTheLoaiKhongDau": "hai-huoc" },
+  { "TenTheLoai": "Khoa học", "TenTheLoaiKhongDau": "khoa-hoc" },
+  { "TenTheLoai": "Đời thường", "TenTheLoaiKhongDau": "doi-thuong" },
+  { "TenTheLoai": "Lãng mạn", "TenTheLoaiKhongDau": "lang-man" },
+  { "TenTheLoai": "Chiến tranh", "TenTheLoaiKhongDau": "chien-tranh" },
+  { "TenTheLoai": "Giáo dục", "TenTheLoaiKhongDau": "giao-duc" },
+  { "TenTheLoai": "Hư cấu", "TenTheLoaiKhongDau": "hu-cau" },
+  { "TenTheLoai": "Tiểu thuyết", "TenTheLoaiKhongDau": "tieu-thuyet" },
+  { "TenTheLoai": "Văn học", "TenTheLoaiKhongDau": "van-hoc" },
+  { "TenTheLoai": "Manga", "TenTheLoaiKhongDau": "manga" },
+  { "TenTheLoai": "Kinh dị", "TenTheLoaiKhongDau": "kinh-di" },
+  { "TenTheLoai": "Tâm lý", "TenTheLoaiKhongDau": "tam-ly" },
+  { "TenTheLoai": "Trinh thám", "TenTheLoaiKhongDau": "trinh-tham" },
+  { "TenTheLoai": "Chính kịch", "TenTheLoaiKhongDau": "chinh-kich" },
+  { "TenTheLoai": "Thriller", "TenTheLoaiKhongDau": "thriller" },
+  { "TenTheLoai": "Fantasy", "TenTheLoaiKhongDau": "fantasy" },
+  { "TenTheLoai": "Truyện ngắn", "TenTheLoaiKhongDau": "truyen-ngan" },
+  { "TenTheLoai": "Self help", "TenTheLoaiKhongDau": "self-help" },
+  { "TenTheLoai": "Tôn giáo", "TenTheLoaiKhongDau": "ton-giao" }
+]

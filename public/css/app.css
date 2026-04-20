@@ -1,0 +1,397 @@
+/* --- Whisper Books Modern Theme --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --bg-light: #ffffff;         /* Tông trắng chủ đạo */
+    --bg-body: #f8f9fa;          /* Nền xám rất nhạt để làm nổi khối trắng */
+    --primary-color: #0d6efd;    /* Màu xanh tri thức (thay cho màu cam giày) */
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --price-red: #d93939;        /* Đỏ nhấn cho giá tiền */
+    --border-gray: #e9ecef;
+    --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-body);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* --- 1. Header & Search --- */
+header {
+    background-color: var(--bg-light);
+}
+
+#bannerWhisperBooks {
+    height: 400px; 
+}
+
+.banner-img {
+    height: 400px;
+    object-fit: cover;    /* Cắt bớt phần thừa, giữ tỉ lệ ảnh */
+    object-position: center; /* Luôn lấy tâm ảnh làm trọng tâm */
+}
+
+/* Tùy chỉnh mũi tên điều hướng cho đẹp hơn */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.3); /* Tạo nền mờ cho mũi tên */
+    background-size: 50% 50%;
+}
+
+.carousel-indicators [data-bs-target] {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Chuyển gạch ngang thành chấm tròn cho hiện đại */
+    background-color: var(--primary-color);
+}
+.search-wrapper .form-control {
+    border-radius: 20px 0 0 20px;
+    border: 2px solid var(--border-gray);
+}
+
+.search-wrapper .btn {
+    border-radius: 0 20px 20px 0;
+    padding: 0 20px;
+}
+
+/* --- 2. Navigation (Giữ bố cục web giày nhưng đổi màu) --- */
+.navbar {
+    padding: 0;
+    background-color: var(--bg-light);
+    box-shadow: var(--shadow-sm);
+}
+
+.navbar-nav .nav-link {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text-dark) !important;
+    padding: 15px 20px !important;
+    text-transform: uppercase;
+    transition: var(--transition);
+}
+
+.navbar-nav .nav-link:hover {
+    color: var(--primary-color) !important;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 8px;
+}
+
+/* --- 3. Banner Placeholder --- */
+.banner-container {
+    width: 100%;
+    height: 400px; /* Độ cao giống banner web giày */
+    background-color: #e2e5e9;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+/* --- 4. Section Titles (Có thanh gạch chân màu xanh) --- */
+.section-title {
+    text-transform: uppercase;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+}
+
+.section-title::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 60px;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
+.filter-group h6 {
+    color: var(--text-dark);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.form-check-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.form-check-input:checked + .form-check-label {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+ ---Giỏ hàng     ---
+.offcanvas {
+    width: 400px !important; /* Độ rộng của giỏ hàng giống Adudu */
+}
+.offcanvas-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.cart-item-img {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.cart-footer {
+    background-color: #fff;
+    padding: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.profile-dropdown {
+    position: relative; /* Bắt buộc để menu con căn chỉnh theo icon này */
+    padding: 10px 0;
+}
+
+.dropdown-toggle-hide::after {
+    display: none;
+}
+
+/* Hiệu ứng Hover để hiện Menu sang bên trái */
+.profile-dropdown:hover .dropdown-menu {
+    display: block !important;
+    position: absolute; /* Để menu bay lơ lửng */
+    top: -5px;
+    right: 100%; /* Đẩy toàn bộ menu sang bên trái icon */
+    padding-right: 15px;
+    margin-right: 0; /* Khoảng cách nhỏ với icon */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    animation: fadeInRight 0.2s ease-in-out;
+    z-index: 1050; /* Đảm bảo menu nằm trên các thành phần khác */
+}
+
+/* Tinh chỉnh giao diện menu */
+.profile-dropdown .dropdown-menu {
+    min-width: 240px;
+    background-color: #ffffff !important; /* Buộc màu trắng để không bị trong suốt */
+    border: 1px solid var(--border-gray);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important; /* Đổ bóng mềm mại */
+    padding: 10px 0;
+    margin-top: 15px !important; /* Khoảng cách với icon hồ sơ */
+    /* Khử mờ do render GPU */
+    transform: translate3d(0, 0, 0) !important;
+    backface-visibility: hidden;
+}
+.profile-dropdown .dropdown-item-text {
+    padding: 12px 20px;
+    background-color: #f8f9fa; /* Nền xám nhạt cho phần header của menu */
+    margin-top: -10px; /* Sát lên đỉnh menu */
+    border-radius: 12px 12px 0 0;
+}
+
+@keyframes fadeInRight {
+    from { 
+        opacity: 0; 
+        transform: translateX(10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateX(0); 
+    }
+}
+
+.profile-dropdown .dropdown-item {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.profile-dropdown .dropdown-item:hover {
+    background-color: #eef4ff; /* Màu xanh nhạt khi hover */
+    color: var(--primary-color);
+    padding-left: 25px;
+}
+.profile-dropdown .dropdown-item:active {
+    background-color: #0d6efd;
+}
+.book-item {
+    background: var(--bg-light);
+    border-radius: 8px;
+    padding: 15px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+    text-align: center;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.book-item:hover {
+    transform: translateY(-10px); /* Hiệu ứng bay lên giống web giày */
+    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+    border-color: var(--border-gray);
+}
+
+
+.book-thumb {
+    height: 250px;
+    width: 100%;
+    aspect-ratio: 3/4; /* Tỉ lệ đứng chuẩn bìa sách */
+    background-color: #f1f1f1;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.book-thumb img {
+    max-width: 100%;
+    width: auto;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.book-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Tự động lấp đầy khoảng trống để đẩy nút Đặt hàng xuống đáy */
+}
+
+.book-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    height: 40px;
+    line-height: 20px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 10px;    
+}
+
+.book-price {
+    color: var(--price-red);
+    font-weight: 700;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.btn-order {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 700;
+    background: transparent;
+    padding: 8px 0;
+    width: 100%;
+    transition: var(--transition);
+    margin-top: auto; 
+}
+
+.btn-order:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* Sidebar Menu dọc */
+.sidebar {
+    background-color: #212529; /* Màu tối giống Adudu */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    z-index: 100;
+}
+
+.transition-all {
+    transition: all 0.2s ease-in-out;
+}
+
+.active-menu {
+    background-color: #ffc107 !important; 
+    color: #212529 !important;
+    font-weight: bold;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #ced4da;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link:hover:not(.active-menu) {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffc107 !important;
+}
+
+.sidebar-heading {
+    letter-spacing: 1px;
+    font-size: 0.75rem;
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: #f0ad4e !important; /* Màu vàng cam thương hiệu */
+}
+
+.admin-card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table-admin thead {
+    background-color: #343a40;
+    color: white;
+}
+
+/* Căn chỉnh ảnh trong bảng */
+.admin-book-img {
+    width: 45px;
+    height: 65px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+/* Bo tròn các badge */
+.badge-pill {
+    padding: 0.5em 1em;
+    border-radius: 50rem;
+}
+/* --- 6. Footer --- */
+footer {
+    background-color: #1a1c1e; /* Đổi sang xám đen để tạo điểm nhấn cuối trang */
+    color: #fff;
+    padding: 60px 0 20px;
+}
+
+footer h5 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+footer .footer-link {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+footer .footer-link:hover {
+    color: #fff;
+}

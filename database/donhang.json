@@ -1,0 +1,14 @@
+{
+  "HoVaTen": "Nguyễn Văn A",
+  "SoDienThoai": "0905123456",
+  "DiaChi": "Long Xuyên, An Giang",
+  "NgayDat": { "$date": "2026-04-19T00:00:00Z" },
+  "TongTien": 450000,
+  "TrangThai": "Chờ xử lý",
+  "ChiTiet": [
+    {
+      "SoLuong": 2,
+      "Gia": 225000
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<div class="container main-content shadow-sm p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary"><i class="bi bi-tag-fill"></i> QUẢN LÝ THỂ LOẠI SÁCH</h4>
+        <a href="/theloai/them" class="btn btn-success"><i class="bi bi-plus-lg"></i> Thêm thể loại mới</a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle border-top">
+            <thead class="table-light">
+                <tr>
+                    <th width="10%">STT</th>
+                    <th>Tên thể loại</th>
+                    <th width="20%" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% var stt = 1; %>
+                <% theloai.forEach(function(tl) { %>
+                    <tr>
+                        <td><%= stt++ %></td>
+                        <td class="fw-bold text-secondary"><%= tl.TenTheLoai %></td>
+                        <td class="text-end">
+                            <a href="/theloai/sua/<%= tl._id %>" class="btn btn-sm btn-outline-primary me-1" title="Sửa">
+                                <i class="bi bi-pencil-square"></i>
+                            </a>
+                            <a href="/theloai/xoa/<%= tl._id %>" class="btn btn-sm btn-outline-danger btn-delete-confirm" title="Xóa">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('footer') %>
+<%- include('javascript') %>

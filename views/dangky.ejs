@@ -1,0 +1,45 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow-sm p-4">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold text-success">ĐĂNG KÝ TÀI KHOẢN</h3>
+                    <p class="text-muted small">Chào mừng bạn đến với Whisper Books</p>
+                </div>
+                <form action="/dangky" method="post" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Họ và tên</label>
+                        <input type="text" name="HoVaTen" class="form-control bg-light" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Email</label>
+                        <input type="email" name="Email" class="form-control bg-light" placeholder="vidu@gmail.com" required>
+                        <div class="invalid-feedback">Vui lòng nhập đúng định dạng email.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Tên đăng nhập</label>
+                        <input type="text" name="TenDangNhap" class="form-control bg-light" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Mật khẩu</label>
+                        <input type="password" name="MatKhau" class="form-control bg-light" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Xác nhận mật khẩu</label>
+                        <input type="password" name="MatKhau" class="form-control bg-light" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-3 text-uppercase">Tạo tài khoản ngay</button>
+                    <p class="text-center small mb-0">Đã có tài khoản? <a href="/dangnhap" class="text-decoration-none">Đăng nhập</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer') %>
+<%- include('javascript') %>

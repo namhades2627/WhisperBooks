@@ -1,0 +1,64 @@
+<%- include('../header') %>
+<%- include('../navbar') %>
+<div class="container-fluid">
+    <div class="row">
+        <%- include('sidebar') %>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-light pb-5">
+            <% if (success) { %>
+                <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                    <strong>Thành công!</strong> <%= success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2 fw-bold text-uppercase">Danh sách tài khoản</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/tai-khoan/them" class="btn btn-warning fw-bold shadow-sm">
+                        <i class="bi bi-plus-lg"></i> Thêm mới
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-responsive bg-white shadow-sm rounded">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Họ và tên</th>
+                            <th>Email</th>
+                            <th>Quyền hạn</th>
+                            <th class="text-end pe-3">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% dsTaiKhoan.forEach(tk => { %>
+                        <tr>
+                            <td class="ps-3">
+                                <div class="fw-bold text-primary"><%= tk.HoVaTen %></div>
+                            </td>
+                            <td><%= tk.Email %></td>
+                            <td>
+                                <span class="badge rounded-pill <%= (tk.QuyenHan === 'admin' || tk.QuyenHan == 1) ? 'bg-danger' : 'bg-secondary' %>">
+                                    <%= (tk.QuyenHan === 'admin' || tk.QuyenHan == 1) ? 'Quản trị viên' : 'Khách hàng' %>
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <a href="/admin/tai-khoan/sua/<%= tk._id %>" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="/admin/tai-khoan/xoa/<%= tk._id %>" 
+                                   class="btn btn-sm btn-outline-danger" 
+                                   title="Xóa"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>

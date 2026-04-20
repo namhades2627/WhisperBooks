@@ -1,0 +1,111 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<main class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Tất cả sách</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <aside class="col-lg-3">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-funnel"></i> BỘ LỌC TÌM KIẾM</h5>
+                    <div class="filter-group mb-4">
+                        <h6 class="fw-bold border-bottom pb-2">Nhà cung cấp</h6>
+                        <div class="mt-2 overflow-auto" style="max-height: 250px;">
+                            <% const nccs = ['Nhã Nam', 'First News', 'Fahasa', 'Skybooks', 'AZ Việt Nam', 'Đinh Tị Books', 'NXB Kim Đồng', 'NXB Trẻ', '1980 Books', 'Omega Plus']; %>
+                            <% nccs.forEach((ncc) => { %>
+                                <div class="form-check mb-1">
+                                    <input class="form-check-input filter-input" type="radio" name="ncc" value="<%= ncc %>">
+                                    <label class="form-check-label"><%= ncc %></label>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                    <div class="filter-group mb-4">
+                        <h6 class="fw-bold border-bottom pb-2">Mức giá</h6>
+                        <div class="form-check mb-1"><input class="form-check-input filter-input" type="radio" name="filterGia" value="duoi100"><label class="form-check-label">Dưới 100.000đ</label></div>
+                        <div class="form-check mb-1"><input class="form-check-input filter-input" type="radio" name="filterGia" value="100-300"><label class="form-check-label">100.000đ - 300.000đ</label></div>
+                        <div class="form-check mb-1"><input class="form-check-input filter-input" type="radio" name="filterGia" value="300-500"><label class="form-check-label">300.000đ - 500.000đ</label></div>
+                        <div class="form-check mb-1"><input class="form-check-input filter-input" type="radio" name="filterGia" value="tren500"><label class="form-check-label">Trên 500.000đ</label></div>
+                    </div>
+                    <button id="btnReset" class="btn btn-sm btn-outline-secondary w-100 mt-2">Xóa bộ lọc</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold m-0"><%= title %></h4>
+                <select class="form-select w-auto border-0 shadow-sm" id="sortSelect">
+                    <option value="moi-nhat">Mới nhất</option>
+                    <option value="gia-tang">Giá tăng dần</option>
+                    <option value="gia-giam">Giá giảm dần</option>
+                    <option value="a-z">Tên A-Z</option>
+                </select>
+            </div>
+
+            <div class="row g-4" id="bookList">
+                <% if(sach.length > 0) { %>
+                    <% sach.forEach(item => { %>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <a href="/sach/<%= item._id %>">
+                                    <img src="/images/<%= item.HinhAnh %>" class="card-img-top p-2" style="height: 250px; object-fit: contain;">
+                                </a>
+                                <div class="card-body d-flex flex-column text-center">
+                                    <h6 class="card-title text-truncate fw-bold mb-2">
+                                        <a href="/sach/<%= item._id %>" class="text-decoration-none text-dark"><%= item.TenSach %></a>
+                                    </h6>
+                                    <p class="text-danger fw-bold mb-3"><%= item.GiaBan.toLocaleString('vi-VN') %>đ</p>
+                                    <a href="/sach/<%= item._id %>" class="btn btn-order text-uppercase w-100 py-2 border-0 shadow-sm text-center text-white text-decoration-none" style="display: block; background-color: #0d6efd;">Đặt hàng</a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                <% } else { %>
+                    <div class="col-12 text-center my-5"><h5>Không tìm thấy sách phù hợp.</h5></div>
+                <% } %>
+            </div>
+
+            <nav class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <% for(let i = 1; i <= pages; i++) { %>
+                        <li class="page-item <%= current == i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterInputs = document.querySelectorAll('.filter-input');
+        const sortSelect = document.getElementById('sortSelect');
+        const btnReset = document.getElementById('btnReset');
+
+        function applyFilters() {
+            const params = new URLSearchParams(window.location.search);
+            params.set('sort', sortSelect.value);
+            const ncc = document.querySelector('input[name="ncc"]:checked');
+            if(ncc) params.set('ncc', ncc.value); else params.delete('ncc');
+            const gia = document.querySelector('input[name="filterGia"]:checked');
+            if(gia) params.set('gia', gia.value); else params.delete('gia');
+            params.set('page', '1');
+            window.location.href = window.location.pathname + '?' + params.toString();
+        }
+
+        filterInputs.forEach(i => i.addEventListener('change', applyFilters));
+        sortSelect.addEventListener('change', applyFilters);
+        btnReset.addEventListener('click', () => window.location.href = window.location.pathname);
+    });
+</script>
+
+<%- include('footer') %>

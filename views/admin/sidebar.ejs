@@ -1,0 +1,30 @@
+<nav class="col-md-3 col-lg-2 d-md-block bg-dark sidebar min-vh-100 p-0 shadow overflow-hidden">
+    <div class="position-sticky pt-3">
+        <div class="text-white px-3 mb-2 small text-uppercase opacity-50 fw-bold" style="letter-spacing: 1px;">
+            Hệ thống quản lý
+        </div>
+        
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link py-3 border-bottom border-secondary transition-all <%= title === 'Quản lý Tài khoản' ? 'active-menu' : 'text-white' %>" href="/admin/tai-khoan">
+                    <i class="bi bi-people-fill me-2"></i> TÀI KHOẢN
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-3 border-bottom border-secondary transition-all <%= title === 'Quản lý Sách' ? 'active-menu' : 'text-white' %>" href="/admin/sach">
+                    <i class="bi bi-box-seam-fill me-2"></i> SÁCH
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link py-3 border-bottom border-secondary transition-all <%= title === 'Quản lý Đơn hàng' ? 'active-menu' : 'text-white' %>" href="/admin/don-hang">
+                    <i class="bi bi-cart-fill me-2"></i> ĐƠN HÀNG
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <%= title === 'Quản lý doanh thu' ? 'active' : '' %>" href="/admin/doanh-thu">
+                    <i class="bi bi-graph-up-arrow me-2"></i> DOANH THU
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

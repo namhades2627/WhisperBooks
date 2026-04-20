@@ -1,0 +1,93 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<main class="container mt-4">
+    <div id="bannerWhisperBooks" class="carousel slide mb-5 shadow-sm rounded-3 overflow-hidden" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#bannerWhisperBooks" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#bannerWhisperBooks" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#bannerWhisperBooks" data-bs-slide-to="2"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="5000">
+                <img src="/images/banner1.jpg" class="d-block w-100 banner-img" alt="Banner 1" onerror="this.src='https://via.placeholder.com/1200x400?text=Banner+1'">
+            </div>
+            <div class="carousel-item" data-bs-interval="5000">
+                <img src="/images/banner2.jpg" class="d-block w-100 banner-img" alt="Banner 2" onerror="this.src='https://via.placeholder.com/1200x400?text=Banner+2'">
+            </div>
+            <div class="carousel-item" data-bs-interval="5000">
+                <img src="/images/banner3.jpg" class="d-block w-100 banner-img" alt="Banner 3" onerror="this.src='https://via.placeholder.com/1200x400?text=Banner+3'">
+            </div>
+        </div>
+    </div>
+
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h4 class="fw-bold text-uppercase mb-0" style="color: #333;">⚡ Sách mới cập nhật</h4>
+            <a href="/tat-ca-sach" class="btn btn-sm btn-outline-primary rounded-pill">Xem tất cả</a>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <% if(typeof sachMoi !== 'undefined' && sachMoi.length > 0) { %>
+                <% sachMoi.forEach(function(item) { %>
+                    <div class="col">
+                        <div class="book-item shadow-sm h-100 bg-white border-0 transition-hover">
+                            <div class="book-thumb p-2">
+                                <a href="/sach/<%= item._id %>">
+                                    <img src="/images/<%= item.HinhAnh %>" class="img-fluid" alt="<%= item.TenSach %>" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                </a>
+                            </div>
+                            <div class="book-info p-3 text-center">
+                                <h6 class="book-name text-truncate" title="<%= item.TenSach %>">
+                                    <a href="/sach/<%= item._id %>" class="text-decoration-none text-dark"><%= item.TenSach %></a>
+                                </h6>
+                                <p class="book-price text-danger fw-bold mb-3"><%= item.GiaBan.toLocaleString('vi-VN') %>đ</p>
+                                <a href="/sach/<%= item._id %>" class="btn btn-order text-uppercase w-100 py-2 border-0 shadow-sm text-center text-white text-decoration-none" style="display: block; background-color: #0d6efd;">Đặt hàng</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="text-muted italic">Đang cập nhật dữ liệu sách mới...</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+
+    <section class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h4 class="fw-bold text-uppercase mb-0" style="color: #333;">🔥 Sách nổi bật</h4>
+            <a href="/tat-ca-sach" class="btn btn-sm btn-outline-primary rounded-pill">Xem thêm</a>
+        </div>
+        
+        <div class="row row-cols-1 row-cols-md-4 g-4">
+            <% if(typeof sachNoiBat !== 'undefined' && sachNoiBat.length > 0) { %>
+                <% sachNoiBat.forEach(function(item) { %>
+                    <div class="col">
+                        <div class="book-item shadow-sm h-100 bg-white border-0 transition-hover">
+                            <div class="book-thumb p-2">
+                                <a href="/sach/<%= item._id %>">
+                                    <img src="/images/<%= item.HinhAnh %>" class="img-fluid" alt="<%= item.TenSach %>" onerror="this.src='https://via.placeholder.com/200x300?text=No+Image'">
+                                </a>
+                            </div>
+                            <div class="book-info p-3 text-center">
+                                <h6 class="book-name text-truncate" title="<%= item.TenSach %>">
+                                    <a href="/sach/<%= item._id %>" class="text-decoration-none text-dark"><%= item.TenSach %></a>
+                                </h6>
+                                <p class="book-price text-danger fw-bold mb-3"><%= item.GiaBan.toLocaleString('vi-VN') %>đ</p>
+                                <a href="/sach/<%= item._id %>" class="btn btn-order text-uppercase w-100 py-2 border-0 shadow-sm text-center text-white text-decoration-none" style="display: block; background-color: #0d6efd;">Đặt hàng</a>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <div class="col-12 text-center">
+                    <p class="text-muted italic">Đang cập nhật dữ liệu sách nổi bật...</p>
+                </div>
+            <% } %>
+        </div>
+    </section>
+</main>
+
+<%- include('footer') %>

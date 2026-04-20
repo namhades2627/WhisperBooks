@@ -1,0 +1,130 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<main class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm border-0 rounded-3 p-4">
+                <h4 class="fw-bold mb-4 text-primary">THÔNG TIN GIAO HÀNG</h4>
+                <form id="orderForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Họ và tên người nhận</label>
+                        <input type="text" name="HoVaTen" class="form-control" value="<%= user ? user.HoVaTen : '' %>" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Số điện thoại</label>
+                            <input type="tel" name="SoDienThoai" class="form-control" required placeholder="09xx xxx xxx">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold">Email nhận thông báo</label>
+                            <input 
+                                type="email" 
+                                class="form-control" 
+                                id="email" 
+                                name="Email" 
+                                placeholder="vidu@gmail.com" 
+                                required
+                            >
+                            <div class="invalid-feedback">
+                                Vui lòng nhập đúng định dạng email (ví dụ: name@gmail.com).
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Địa chỉ nhận hàng</label>
+                        <textarea type="text" name="DiaChi" class="form-control" rows="3" required placeholder="Số nhà, tên đường, Phường/Xã, Quận/Huyện..."></textarea>
+                    </div>
+                    <hr>
+                    <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold py-3">XÁC NHẬN ĐẶT HÀNG</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card shadow-sm border-0 rounded-3 p-4 bg-light">
+                <h4 class="fw-bold mb-4">TÓM TẮT ĐƠN HÀNG</h4>
+                <div id="orderSummaryList">
+                    </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fs-5 fw-bold">TỔNG TIỀN:</span>
+                    <span class="fs-4 fw-bold text-danger" id="finalTotal">0đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lấy dữ liệu từ localStorage (do hàm proceedToCheckout lưu vào)
+        const items = JSON.parse(localStorage.getItem('checkout_items')) || [];
+        const summaryList = document.getElementById('orderSummaryList');
+        const totalDisplay = document.getElementById('finalTotal');
+
+        if (items.length === 0) {
+            alert("Đơn hàng của bạn đang trống!");
+            window.location.href = '/';
+            return;
+        }
+
+        let total = 0;
+        let html = '';
+
+        items.forEach(item => {
+            total += item.gia * item.quantity;
+            html += `
+                <div class="d-flex align-items-center mb-3">
+                    <img src="/images/${item.hinh}" class="rounded me-3 shadow-sm" style="width: 60px; height: 80px; object-fit: cover;">
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold">${item.ten}</h6>
+                        <small class="text-muted">${item.gia.toLocaleString()}đ x ${item.quantity}</small>
+                    </div>
+                    <span class="fw-bold">${(item.gia * item.quantity).toLocaleString()}đ</span>
+                </div>`;
+        });
+
+        summaryList.innerHTML = html;
+        totalDisplay.innerText = total.toLocaleString() + 'đ';
+    });
+
+    // Xử lý gửi đơn hàng về Server/Admin
+  document.getElementById('orderForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const items = JSON.parse(localStorage.getItem('checkout_items'));
+    
+    // Cách lấy dữ liệu này là an toàn và chính xác nhất
+    const orderData = {
+        HoVaTen: this.querySelector('[name="HoVaTen"]').value,
+        SoDienThoai: this.querySelector('[name="SoDienThoai"]').value,
+        Email: this.querySelector('[name="Email"]').value,
+        DiaChi: document.getElementsByName('DiaChi')[0].value, 
+        DanhSachSanPham: items,
+        TongTien: document.getElementById('finalTotal').innerText
+    };
+
+    try {
+        const response = await fetch('/dat-hang', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert('Đặt hàng thành công! Vui lòng kiểm tra thông tin đơn hàng qua email của bạn. Whisper Books chân thành cảm ơn!');
+            localStorage.removeItem('cart');
+            localStorage.removeItem('checkout_items');
+            window.location.href = '/';
+        } else {
+            alert('Máy chủ báo lỗi, vui lòng kiểm tra lại!');
+        }
+    } catch (error) {
+        alert('Lỗi kết nối mạng!');
+    }
+});
+</script>
+
+<%- include('footer') %>

@@ -1,0 +1,18 @@
+[
+  {
+    "HoVaTen": "Quản trị viên",
+    "Email": "admin@whisperbooks.com",
+    "TenDangNhap": "admin",
+    "MatKhau": "$2a$10$8K1p/aP0W0n8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z",
+    "QuyenHan": "admin",
+    "KichHoat": 1
+  },
+  {
+    "HoVaTen": "Người dùng",
+    "Email": "user@gmail.com",
+    "TenDangNhap": "user",
+    "MatKhau": "$2a$10$8K1p/aP0W0n8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z8Z",
+    "QuyenHan": "user",
+    "KichHoat": 1
+  }
+]

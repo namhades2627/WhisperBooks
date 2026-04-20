@@ -1,0 +1,119 @@
+<%- include('../header') %>
+<%- include('../navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('sidebar') %>
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fw-bold text-uppercase">Chi tiết đơn hàng</h5>
+                    <span class="text-muted small">Ngày đặt: <%= new Date(item.NgayDat).toLocaleString('vi-VN') %></span>
+                </div>
+                <div class="card-body">
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="p-3 bg-white border rounded shadow-sm">
+                                <h6 class="fw-bold text-primary mb-3 border-bottom pb-2">
+                                    <i class="bi bi-person-badge me-2"></i>THÔNG TIN GIAO HÀNG
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p class="mb-1 text-muted">Họ và tên người nhận:</p>
+                                        <p class="fw-bold fs-5 text-dark"><%= item.HoVaTen %></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1 text-muted">Số điện thoại:</p>
+                                        <p class="fw-bold fs-5 text-dark"><%= item.SoDienThoai %></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <p class="mb-1 text-muted">Địa chỉ nhận hàng:</p>
+                                        <p class="fw-bold text-dark"><%= item.DiaChi || 'Chưa cập nhật' %></p>
+                                    </div>
+                                    <% if(item.Email) { %>
+                                    <div class="col-md-12 mt-2">
+                                        <p class="mb-1 text-muted">Email:</p>
+                                        <p class="text-dark"><%= item.Email %></p>
+                                    </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info p-3 mb-4">
+                        <form action="/admin/don-hang/cap-nhat-trang-thai/<%= item._id %>" method="POST" class="row align-items-end">
+                            <div class="col-md-6">
+                                <label class="fw-bold mb-2 d-block">Trạng thái đơn hàng:</label>
+                                <select name="TrangThai" class="form-select border-primary">
+                                    <option value="0" <%= item.TrangThai === 0 ? 'selected' : '' %>>Chờ duyệt</option>
+                                    <option value="1" <%= item.TrangThai === 1 ? 'selected' : '' %>>Đang giao</option>
+                                    <option value="2" <%= item.TrangThai === 2 ? 'selected' : '' %>>Hoàn thành</option>
+                                    <option value="3" <%= item.TrangThai === 3 ? 'selected' : '' %>>Đã hủy</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <button type="submit" class="btn btn-primary fw-bold px-4">
+                                    <i class="bi bi-check-circle me-1"></i> CẬP NHẬT TRẠNG THÁI
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <h6 class="fw-bold mb-3 mt-4"><i class="bi bi-box-seam me-2"></i>DANH SÁCH SẢN PHẨM</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover border align-middle">
+                            <thead class="bg-light text-uppercase small">
+                                <tr>
+                                    <th class="text-center" style="width: 50px;">STT</th>
+                                    <th>Sản phẩm</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Đơn giá</th>
+                                    <th class="text-end">Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% item.ChiTiet.forEach((ct, index) => { %>
+                                <tr>
+                                    <td class="text-center"><%= index + 1 %></td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <% if(ct.SachID) { %>
+                                                <img src="/images/<%= ct.SachID.HinhAnh %>" 
+                                                     alt="<%= ct.SachID.TenSach %>" 
+                                                     class="img-thumbnail me-3" 
+                                                     style="width: 50px; height: 70px; object-fit: cover;">
+                                                <div>
+                                                    <span class="fw-bold d-block"><%= ct.SachID.TenSach %></span>
+                                                </div>
+                                            <% } else { %>
+                                                <span class="text-danger">Sách đã bị xóa khỏi hệ thống</span>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                    <td class="text-center"><%= ct.SoLuong %></td>
+                                    <td class="text-end"><%= ct.Gia.toLocaleString() %>đ</td>
+                                    <td class="fw-bold text-end"><%= (ct.Gia * ct.SoLuong).toLocaleString() %>đ</td>
+                                </tr>
+                                <% }) %>
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th colspan="4" class="text-end py-3">TỔNG CỘNG:</th>
+                                    <th class="text-danger fs-4 text-end py-3"><%= item.TongTien.toLocaleString() %>đ</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="/admin/don-hang" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

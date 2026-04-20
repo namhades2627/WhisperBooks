@@ -1,0 +1,31 @@
+<%- include('header') %>
+<%- include('navbar') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white p-3">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle"></i> THÊM THỂ LOẠI MỚI</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/theloai/them" method="post" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tên thể loại sách</label>
+                            <input type="text" name="TenTheLoai" class="form-control" placeholder="Ví dụ: Kinh tế, Văn học, Ngoại ngữ..." required>
+                            <div class="invalid-feedback">Vui lòng nhập tên thể loại.</div>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <a href="/theloai" class="btn btn-light border">Quay lại</a>
+                            <button type="submit" class="btn btn-primary px-4">Lưu lại</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('footer') %>
+<%- include('javascript') %>

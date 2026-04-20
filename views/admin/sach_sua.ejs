@@ -1,0 +1,81 @@
+<%- include('../header') %>
+<%- include('../navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <%- include('sidebar') %>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/admin/sach" class="text-decoration-none">Quản lý sách</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa sách</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold text-uppercase text-warning">
+                        <i class="bi bi-pencil-square me-2"></i>Sửa sách: <%= item.TenSach %>
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <form action="/admin/sach/sua/<%= item._id %>" method="POST">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Tên cuốn sách</label>
+                                <input type="text" name="TenSach" class="form-control" value="<%= item.TenSach %>" required>
+                            </div>
+                             <div class="col-md-4">
+                                <label class="form-label fw-bold">Nhà cung cấp</label>
+                                <input type="text" name="NhaCungCap" class="form-control" value="<%= item.NhaCungCap %>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Thể loại</label>
+                                <select name="TheLoai" class="form-select">
+                                    <% dsTheLoai.forEach(tl => { %>
+                                        <option value="<%= tl._id %>" <%= item.TheLoai.toString() === tl._id.toString() ? 'selected' : '' %>>
+                                            <%= tl.TenTheLoai %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Giá bán (VNĐ)</label>
+                                <input type="text" name="GiaBan" class="form-control" value="<%= item.GiaBan %>" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Số lượng trong kho</label>
+                                <input type="text" name="SoLuong" class="form-control" value="<%= item.SoLuong %>">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold">Hình ảnh (tên file)</label>
+                                <input type="text" name="HinhAnh" class="form-control" value="<%= item.HinhAnh %>">
+                                <small class="text-muted">Ví dụ: dac-nhan-tam.jpg</small>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Mô tả sách</label>
+                                <textarea name="MoTa" class="form-control" rows="4"><%= item.MoTa %></textarea>
+                            </div>
+                            <script>
+                                    CKEDITOR.replace('MoTa');
+                            </script>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top text-end">
+                            <a href="/admin/sach" class="btn btn-outline-secondary px-4 me-2">Quay lại</a>
+                            <button type="submit" class="btn btn-warning fw-bold px-4 shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> Cập nhật thông tin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
