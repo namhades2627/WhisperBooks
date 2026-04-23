@@ -19,7 +19,13 @@
                 <p class="mb-0"><strong>Thể loại:</strong> <span class="text-primary"><%= s.TheLoai ? s.TheLoai.TenTheLoai : 'Đang cập nhật' %></span></p>
             </div>
 
-            <p class="text-muted mb-4"><strong>Tình trạng:</strong> <%= s.SoLuong > 0 ? 'Còn hàng' : 'Hết hàng' %></p>
+            <p class="text-muted mb-4">
+                <strong>Tình trạng:</strong> 
+                <%- s.SoLuong > 0 
+                    ? '<span class="text-success">Còn hàng</span>' 
+                    : '<span class="text-danger">Hết hàng</span>' 
+                %>
+            </p>
 
             <div class="d-flex align-items-center mb-4">
                 <span class="me-3 fw-bold">SỐ LƯỢNG:</span>

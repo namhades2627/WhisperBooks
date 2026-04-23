@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var TheLoai = require('../models/theloai');
-var Sach = require('../models/sach');
+const express = require('express');
+const router = express.Router();
+const TheLoai = require('../models/theloai');
+const Sach = require('../models/sach');
 
 // GET: Danh sách sách
 router.get('/', async (req, res) => {
-	var s = await Sach.find()
+	const s = await Sach.find()
 		.populate('TheLoai')
 		.populate('TaiKhoan').exec();
 	res.render('sach', {
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 // GET: Thêm sách
 router.get('/them', async (req, res) => {
-	var tl = await TheLoai.find();
+	const tl = await TheLoai.find();
 	res.render('sach_them', {
 		title: 'Thêm sách mới',
 		theloai: tl
@@ -26,7 +26,7 @@ router.get('/them', async (req, res) => {
 // POST: Thêm sách
 router.post('/them', async (req, res) => {
 	if(req.session.MaNguoiDung) {
-		var data = {
+		const data = {
 			TheLoai: req.body.MaTheLoai,
 			TaiKhoan: req.session.MaNguoiDung,
 			TenSach: req.body.TenSach,
@@ -46,9 +46,9 @@ router.post('/them', async (req, res) => {
 
 // GET: Sửa sách
 router.get('/sua/:id', async (req, res) => {
-	var id = req.params.id;
-	var tl = await TheLoai.find();
-	var s = await Sach.findById(id);
+	const id = req.params.id;
+	const tl = await TheLoai.find();
+	const s = await Sach.findById(id);
 	res.render('sach_sua', {
 		title: 'Sửa thông tin sách',
 		theloai: tl,
@@ -58,8 +58,8 @@ router.get('/sua/:id', async (req, res) => {
 
 // POST: Sửa sách
 router.post('/sua/:id', async (req, res) => {
-	var id = req.params.id;
-	var data = {
+	const id = req.params.id;
+	const data = {
 		TheLoai: req.body.MaTheLoai,
 		TenSach: req.body.TenSach,
 		NhaCungCap: req.body.NhaCungCap,
