@@ -3,6 +3,7 @@ const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
 const path = require('path');
+const methodOverride = require('method-override')
 
 // ==========================================
 // 1. CẤU HÌNH CƠ BẢN & KẾT NỐI DB
@@ -17,6 +18,7 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(methodOverride('_method'));
 
 // ==========================================
 // 2. CẤU HÌNH SESSION (Phải đặt trước Middleware)
@@ -79,7 +81,6 @@ app.use('/sach', sachRouter);
 app.use('/', authRouter);
 app.use('/', indexRouter); // indexRouter thường đặt cuối cùng để tránh trùng lặp route
 
-// Mặc định cho admin
 app.get('/admin', (req, res) => {
     res.redirect('/admin/don-hang');
 });

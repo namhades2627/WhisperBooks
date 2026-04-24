@@ -2,16 +2,68 @@ const express = require('express');
 const router = express.Router();
 const TheLoai = require('../models/theloai');
 const Sach = require('../models/sach');
+const DanhGia = require('../models/danhgia');
 
 // GET: Danh sách sách
 router.get('/', async (req, res) => {
 	const s = await Sach.find()
 		.populate('TheLoai')
 		.populate('TaiKhoan').exec();
-	res.render('sach', {
+	res.render('admin/sach', {
 		title: 'Danh sách sách',
-		sach: s
+		dsSach: s,
+		dsDanhGia: []
 	});
+});
+
+router.post('/danh-gia', async (req, res) => {
+    try {
+        // 1. Kiểm tra đăng nhập
+        if (!req.session.user) {
+            req.session.error = 'Bạn cần đăng nhập để gửi đánh giá!';
+            return res.redirect('back'); // Quay lại trang chi tiết sách
+        }
+
+        // 2. Lấy dữ liệu từ Modal gửi lên
+        const { Sach_id, SoSao, NoiDung } = req.body;
+
+        // 3. Tạo bản ghi mới
+        const moi = new DanhGia({
+            Sach_id: Sach_id,
+            User_id: req.session.user._id, // Lấy ID người dùng từ Session
+            SoSao: parseInt(SoSao),
+            NoiDung: NoiDung
+        });
+
+        await moi.save();
+        req.session.success = 'Cảm ơn Nhựt Nam! Đánh giá của bạn đã được gửi.';
+        res.redirect('back');
+    } catch (err) {
+        console.error(err);
+        req.session.error = 'Lỗi khi gửi đánh giá: ' + err.message;
+        res.redirect('back');
+    }
+});
+
+router.get('/:id', async (req, res) => {
+    try {
+        const s = await Sach.findById(req.params.id).populate('TheLoai');
+        
+        // Lấy danh sách đánh giá của sách này
+        const dsDanhGia = await DanhGia.find({ Sach_id: req.params.id })
+            .populate('User_id', 'HoVaTen')
+            .sort({ createdAt: -1 });
+
+        res.render('sach_chitiet', {
+            title: s.TenSach,
+            s: s,
+            dsDanhGia: dsDanhGia,
+            user: req.session.user || null
+        });
+    } catch (err) {
+        console.error("Lỗi trang chi tiết:", err);
+        res.redirect('/sach');
+    }
 });
 
 // GET: Thêm sách

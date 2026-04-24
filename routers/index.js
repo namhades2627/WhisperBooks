@@ -97,21 +97,20 @@ router.get('/tim-kiem', async (req, res) => {
 // GET: Xem chi tiết sách
 router.get('/sach/:id', async (req, res) => {
     try {
-        // Tìm sách theo ID và lấy luôn thông tin Thể loại để hiển thị
-        const s = await Sach.findById(req.params.id).populate('TheLoai');
+        const s = await Sach.findById(req.params.id);
         
-        // Cập nhật lượt xem (tăng lên 1 mỗi lần click)
-        s.LuotXem = (s.LuotXem || 0) + 1;
-        await s.save();
+        // Lấy danh sách đánh giá và "Populate" để lấy luôn tên người đánh giá
+        const dsDanhGia = await DanhGia.find({ Sach_id: req.params.id })
+                                      .populate('User_id', 'HoVaTen') // Chỉ lấy cột họ tên
+                                      .sort({ createdAt: -1 }); // Mới nhất hiện lên đầu
 
         res.render('sach_chitiet', { 
-            title: s.TenSach, 
-            s: s,
-            user: req.session.user || null
+            s: s, 
+            dsDanhGia: dsDanhGia,
+            title: s.TenSach 
         });
     } catch (err) {
-        console.error("Lỗi xem chi tiết sách:", err);
-        res.redirect('/tat-ca-sach');
+        res.redirect('/');
     }
 });
 

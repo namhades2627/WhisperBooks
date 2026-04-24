@@ -5,6 +5,7 @@ const Sach = require('../models/sach');
 const TaiKhoan = require('../models/taikhoan');
 const TheLoai = require('../models/theloai');
 const DonHang = require('../models/donhang');
+const DanhGia = require('../models/danhgia');
 
 // Quản lý sách
 router.get('/sach', async (req, res) => {
@@ -276,4 +277,30 @@ router.get('/doanh-thu', async (req, res) => {
     }
 });
 
+router.get('/danh-gia', async (req, res) => {
+    try {
+        const dsDanhGia = await DanhGia.find()
+            .populate('Sach_id', 'TenSach HinhAnh') // Lấy tên và hình ảnh sách
+            .populate('User_id', 'HoVaTen')        // Lấy tên người dùng
+            .sort({ createdAt: -1 });              // Mới nhất lên đầu
+
+        res.render('admin/danhgia', {
+            title: 'Quản lý đánh giá',
+            dsDanhGia: dsDanhGia
+        });
+    } catch (err) {
+        console.error(err);
+        res.redirect('/admin');
+    }
+});
+
+router.delete('/xoa-danh-gia/:id', async (req, res) => {
+    try {
+        await DanhGia.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/danh-gia'); // Quay lại trang danh sách
+    } catch (err) {
+        console.error(err);
+        res.redirect('back');
+    }
+});
 module.exports = router;

@@ -38,12 +38,10 @@
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
                 <% if (user) { %>
-                    <button onclick="addToCart('<%= s._id %>', '<%= s.TenSach %>', '<%= s.GiaBan %>', '<%= s.HinhAnh %>')" 
-                            class="btn btn-outline-primary btn-lg px-4 fw-bold">
+                    <button onclick="handleAddToCart()" class="btn btn-outline-primary btn-lg px-4 fw-bold">
                         <i class="bi bi-cart-plus me-2"></i>Thêm vào giỏ
                     </button>
-                    <button onclick="handleBuyNow('<%= s._id %>', '<%= s.TenSach %>', '<%= s.GiaBan %>', '<%= s.HinhAnh %>')" 
-                            class="btn btn-danger btn-lg px-4 fw-bold">
+                    <button onclick="handleBuyNow()" class="btn btn-danger btn-lg px-4 fw-bold">
                         Mua ngay
                     </button>
                 <% } else { %>
@@ -56,33 +54,103 @@
                 <% } %>
             </div>
     
-            <div class="border-top pt-4">
+            <div class="border-top pt-4 mt-4">
                 <h5 class="fw-bold">Mô tả sách</h5>
-                <div class="text-justify mt-2">
+                <div class="text-justify mt-2 text-muted">
                     <%- s.MoTa %>
                 </div>
+            </div>
+
+            <div class="mt-4 border-top pt-3">
+                <% if (user) { %>
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#modalDanhGia">
+                        <i class="bi bi-pencil"></i> Viết đánh giá
+                    </button>
+                <% } else { %>
+                    <button onclick="alertLogin()" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil"></i> Đăng nhập để đánh giá
+                    </button>
+                <% } %>
+            </div>
+        </div> 
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="fw-bold border-bottom pb-2 text-uppercase">Đánh giá từ khách hàng</h4>
+            <div class="mt-3">
+                <% if (typeof dsDanhGia !== 'undefined' && dsDanhGia.length > 0) { %>
+                    <% dsDanhGia.forEach(dg => { %>
+                        <div class="card mb-3 border-0 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold mb-0 text-primary"><%= dg.User_id ? dg.User_id.HoVaTen : 'Người dùng ẩn danh' %></h6>
+                                    <small class="text-muted"><%= dg.createdAt.toLocaleDateString('vi-VN') %></small>
+                                </div>
+                                <div class="text-warning mb-2">
+                                    <% for(let i=0; i < dg.SoSao; i++) { %>
+                                        <i class="bi bi-star-fill"></i>
+                                    <% } %>
+                                    <% for(let i=dg.SoSao; i < 5; i++) { %>
+                                        <i class="bi bi-star"></i>
+                                    <% } %>
+                                </div>
+                                <p class="card-text"><%= dg.NoiDung %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center py-4 bg-light rounded">
+                        <p class="text-muted mb-0">Chưa có đánh giá nào cho cuốn sách này. Hãy là người đầu tiên!</p>
+                    </div>
+                <% } %>
             </div>
         </div>
     </div>
 </main>
 
+<div class="modal fade" id="modalDanhGia" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <form action="/sach/danh-gia" method="POST">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title w-100 text-center fw-bold">VIẾT ĐÁNH GIÁ SẢN PHẨM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="rating-stars mb-3 fs-3 text-warning">
+                        <i class="bi bi-star star-item" data-value="1" style="cursor:pointer"></i>
+                        <i class="bi bi-star star-item" data-value="2" style="cursor:pointer"></i>
+                        <i class="bi bi-star star-item" data-value="3" style="cursor:pointer"></i>
+                        <i class="bi bi-star star-item" data-value="4" style="cursor:pointer"></i>
+                        <i class="bi bi-star star-item" data-value="5" style="cursor:pointer"></i>
+                        <input type="hidden" name="SoSao" id="inputSoSao" value="5">
+                        <input type="hidden" name="Sach_id" value="<%= s._id %>">
+                    </div>
+                    <textarea name="NoiDung" class="form-control" rows="4" placeholder="Nhập nhận xét của bạn" required></textarea>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger px-5">Gửi nhận xét</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <%- include('footer') %>
+
 <script>
-    // 1. Hàm tăng giảm số lượng
     function changeQty(amt) {
         var qtyInput = document.getElementById('soluong');
         var currentQty = parseInt(qtyInput.value);
         var newQty = currentQty + amt;
-        
-        // Lấy số lượng tồn kho từ server truyền xuống
         var maxQty = parseInt('<%= s.SoLuong %>'); 
-        
         if (newQty > 0 && newQty <= maxQty) {
             qtyInput.value = newQty;
         }
     }
 
-    // 2. Hàm gom dữ liệu sản phẩm
     function getProductData() {
         return {
             id: '<%= s._id %>',
@@ -93,28 +161,40 @@
         };
     }
 
-    // 3. Xử lý Thêm giỏ hàng
     function handleAddToCart() {
         var p = getProductData();
         if (typeof addToCart === "function") {
             addToCart(p.id, p.ten, p.gia, p.hinh, p.quantity);
         } else {
-            alert("Lỗi: Không tìm thấy file cart.js!");
+            alert("Lỗi: Không tìm thấy chức năng giỏ hàng!");
         }
     }
 
-    // 4. Xử lý Mua ngay
     function handleBuyNow() {
         var p = getProductData();
         if (typeof proceedToCheckout === "function") {
             proceedToCheckout('single', p);
         } else {
-            alert("Lỗi: Không tìm thấy file cart.js!");
+            alert("Lỗi: Không tìm thấy chức năng thanh toán!");
         }
     }
     
     function alertLogin() {
-    alert("Vui lòng đăng nhập để mua hàng hoặc thêm sản phẩm vào giỏ hàng!");
-    window.location.href = '/dangnhap';
+        alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+        window.location.href = '/dangnhap';
     }
+
+    // Xử lý ngôi sao đánh giá
+    document.querySelectorAll('.star-item').forEach(star => {
+        star.addEventListener('click', function() {
+            let val = this.getAttribute('data-value');
+            document.getElementById('inputSoSao').value = val;
+            document.querySelectorAll('.star-item').forEach(s => {
+                s.classList.replace('bi-star-fill', 'bi-star');
+            });
+            for(let i=0; i<val; i++) {
+                document.querySelectorAll('.star-item')[i].classList.replace('bi-star', 'bi-star-fill');
+            }
+        });
+    });
 </script>
