@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const donHangSchema = new mongoose.Schema({
-    // Sửa ref thành 'TaiKhoan'
     TaiKhoan: { type: mongoose.Schema.Types.ObjectId, ref: 'TaiKhoan' }, 
     HoVaTen: String,
     Email: String,

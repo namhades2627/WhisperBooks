@@ -2,12 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-    --bg-light: #ffffff;         /* Tông trắng chủ đạo */
-    --bg-body: #f8f9fa;          /* Nền xám rất nhạt để làm nổi khối trắng */
-    --primary-color: #0d6efd;    /* Màu xanh tri thức (thay cho màu cam giày) */
+    --bg-light: #ffffff;         
+    --bg-body: #f8f9fa;
+    --primary-color: #0d6efd;    
     --text-dark: #212529;
     --text-muted: #6c757d;
-    --price-red: #d93939;        /* Đỏ nhấn cho giá tiền */
+    --price-red: #d93939;        
     --border-gray: #e9ecef;
     --shadow-sm: 0 .125rem .25rem rgba(0,0,0,.075);
     --transition: all 0.3s ease;
@@ -20,7 +20,7 @@ body {
     line-height: 1.6;
 }
 
-/* --- 1. Header & Search --- */
+
 header {
     background-color: var(--bg-light);
 }
@@ -31,21 +31,20 @@ header {
 
 .banner-img {
     height: 400px;
-    object-fit: cover;    /* Cắt bớt phần thừa, giữ tỉ lệ ảnh */
-    object-position: center; /* Luôn lấy tâm ảnh làm trọng tâm */
+    object-fit: cover;   
+    object-position: center; 
 }
 
-/* Tùy chỉnh mũi tên điều hướng cho đẹp hơn */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
-    background-color: rgba(0, 0, 0, 0.3); /* Tạo nền mờ cho mũi tên */
+    background-color: rgba(0, 0, 0, 0.3); 
     background-size: 50% 50%;
 }
 
 .carousel-indicators [data-bs-target] {
     width: 10px;
     height: 10px;
-    border-radius: 50%; /* Chuyển gạch ngang thành chấm tròn cho hiện đại */
+    border-radius: 50%; 
     background-color: var(--primary-color);
 }
 .search-wrapper .form-control {
@@ -58,7 +57,6 @@ header {
     padding: 0 20px;
 }
 
-/* --- 2. Navigation (Giữ bố cục web giày nhưng đổi màu) --- */
 .navbar {
     padding: 0;
     background-color: var(--bg-light);
@@ -85,17 +83,16 @@ header {
     border-radius: 8px;
 }
 
-/* --- 3. Banner Placeholder --- */
+
 .banner-container {
     width: 100%;
-    height: 400px; /* Độ cao giống banner web giày */
+    height: 400px; 
     background-color: #e2e5e9;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
 }
 
-/* --- 4. Section Titles (Có thanh gạch chân màu xanh) --- */
 .section-title {
     text-transform: uppercase;
     font-weight: 700;
@@ -132,7 +129,7 @@ header {
 }
  ---Giỏ hàng     ---
 .offcanvas {
-    width: 400px !important; /* Độ rộng của giỏ hàng giống Adudu */
+    width: 400px !important; 
 }
 .offcanvas-header {
     background-color: #f8f9fa;
@@ -152,7 +149,7 @@ header {
 }
 
 .profile-dropdown {
-    position: relative; /* Bắt buộc để menu con căn chỉnh theo icon này */
+    position: relative; 
     padding: 10px 0;
 }
 
@@ -160,38 +157,35 @@ header {
     display: none;
 }
 
-/* Hiệu ứng Hover để hiện Menu sang bên trái */
 .profile-dropdown:hover .dropdown-menu {
     display: block !important;
-    position: absolute; /* Để menu bay lơ lửng */
+    position: absolute; 
     top: -5px;
-    right: 100%; /* Đẩy toàn bộ menu sang bên trái icon */
+    right: 100%; 
     padding-right: 15px;
-    margin-right: 0; /* Khoảng cách nhỏ với icon */
+    margin-right: 0; 
     background: transparent;
     border: none;
     box-shadow: none;
     animation: fadeInRight 0.2s ease-in-out;
-    z-index: 1050; /* Đảm bảo menu nằm trên các thành phần khác */
+    z-index: 1050; 
 }
 
-/* Tinh chỉnh giao diện menu */
 .profile-dropdown .dropdown-menu {
     min-width: 240px;
-    background-color: #ffffff !important; /* Buộc màu trắng để không bị trong suốt */
+    background-color: #ffffff !important; 
     border: 1px solid var(--border-gray);
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important; /* Đổ bóng mềm mại */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important; 
     padding: 10px 0;
-    margin-top: 15px !important; /* Khoảng cách với icon hồ sơ */
-    /* Khử mờ do render GPU */
+    margin-top: 15px !important; 
     transform: translate3d(0, 0, 0) !important;
     backface-visibility: hidden;
 }
 .profile-dropdown .dropdown-item-text {
     padding: 12px 20px;
-    background-color: #f8f9fa; /* Nền xám nhạt cho phần header của menu */
-    margin-top: -10px; /* Sát lên đỉnh menu */
+    background-color: #f8f9fa; 
+    margin-top: -10px; 
     border-radius: 12px 12px 0 0;
 }
 
@@ -217,7 +211,7 @@ header {
 }
 
 .profile-dropdown .dropdown-item:hover {
-    background-color: #eef4ff; /* Màu xanh nhạt khi hover */
+    background-color: #eef4ff; 
     color: var(--primary-color);
     padding-left: 25px;
 }
@@ -238,7 +232,7 @@ header {
 }
 
 .book-item:hover {
-    transform: translateY(-10px); /* Hiệu ứng bay lên giống web giày */
+    transform: translateY(-10px); 
     box-shadow: 0 15px 35px rgba(0,0,0,0.1);
     border-color: var(--border-gray);
 }
@@ -247,7 +241,7 @@ header {
 .book-thumb {
     height: 250px;
     width: 100%;
-    aspect-ratio: 3/4; /* Tỉ lệ đứng chuẩn bìa sách */
+    aspect-ratio: 3/4; 
     background-color: #f1f1f1;
     margin-bottom: 15px;
     display: flex;
@@ -267,7 +261,7 @@ header {
 .book-info {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* Tự động lấp đầy khoảng trống để đẩy nút Đặt hàng xuống đáy */
+    flex-grow: 1; 
 }
 
 .book-name {
@@ -307,9 +301,8 @@ header {
     color: #fff;
 }
 
-/* Sidebar Menu dọc */
 .sidebar {
-    background-color: #212529; /* Màu tối giống Adudu */
+    background-color: #212529; 
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
     z-index: 100;
 }
@@ -347,7 +340,7 @@ header {
 
 .sidebar .nav-link.active {
     color: #fff;
-    background-color: #f0ad4e !important; /* Màu vàng cam thương hiệu */
+    background-color: #f0ad4e !important; 
 }
 
 .admin-card {
@@ -360,7 +353,6 @@ header {
     color: white;
 }
 
-/* Căn chỉnh ảnh trong bảng */
 .admin-book-img {
     width: 45px;
     height: 65px;
@@ -368,14 +360,12 @@ header {
     border-radius: 4px;
 }
 
-/* Bo tròn các badge */
 .badge-pill {
     padding: 0.5em 1em;
     border-radius: 50rem;
 }
-/* --- 6. Footer --- */
 footer {
-    background-color: #1a1c1e; /* Đổi sang xám đen để tạo điểm nhấn cuối trang */
+    background-color: #1a1c1e; 
     color: #fff;
     padding: 60px 0 20px;
 }

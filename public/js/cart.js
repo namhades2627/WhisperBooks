@@ -1,7 +1,16 @@
-// 1. Khởi tạo hoặc lấy giỏ hàng từ localStorage
+
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-// 2. Hàm cập nhật số lượng hiển thị trên icon giỏ hàng (Badge)
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+    })[character]);
+}
+
 function updateCartBadge() {
     const badge = document.getElementById('cartBadge');
     if (badge) {
@@ -10,14 +19,14 @@ function updateCartBadge() {
     }
 }
 
-// 3. Hàm vẽ (render) danh sách sản phẩm vào Side Cart
+
 function renderCart() {
     const cartContent = document.getElementById('cartContent');
     const totalElement = document.querySelector('.cart-footer .text-danger');
     
-    if (!cartContent) return; // Nếu không tìm thấy vùng chứa thì thoát
+    if (!cartContent) return; 
 
-    // Trường hợp giỏ hàng trống
+    
     if (cart.length === 0) {
         cartContent.innerHTML = `
             <div class="text-center py-5">
@@ -28,7 +37,7 @@ function renderCart() {
         return;
     }
 
-    // Trường hợp có sản phẩm: Duyệt mảng cart để tạo HTML
+    
     let html = '<div class="list-group list-group-flush">';
     let total = 0;
 
@@ -38,10 +47,10 @@ function renderCart() {
             <div class="list-group-item py-3 border-0 border-bottom">
                 <div class="row align-items-center">
                     <div class="col-3">
-                        <img src="/images/${item.hinh}" class="img-fluid rounded shadow-sm" alt="${item.ten}">
+                        <img src="/images/${encodeURIComponent(String(item.hinh || ''))}" class="img-fluid rounded shadow-sm" alt="${escapeHtml(item.ten)}">
                     </div>
                     <div class="col-7">
-                        <h6 class="mb-1 fw-bold text-truncate" style="max-width: 150px;">${item.ten}</h6>
+                        <h6 class="mb-1 fw-bold text-truncate" style="max-width: 150px;">${escapeHtml(item.ten)}</h6>
                         <small class="text-muted d-block">${item.gia.toLocaleString()}đ x ${item.quantity}</small>
                     </div>
                     <div class="col-2 text-end">
@@ -56,15 +65,15 @@ function renderCart() {
     html += '</div>';
     cartContent.innerHTML = html;
     
-    // Cập nhật tổng tiền ở footer của Side Cart
+    
     if (totalElement) {
         totalElement.innerText = total.toLocaleString() + 'đ';
     }
 }
 
-// 4. Hàm thêm sản phẩm vào giỏ (Cập nhật badge và vẽ lại giỏ ngay)
+
 function addToCart(id, ten, gia, hinh, qty = 1) {
-    // Ép kiểu giá về số để tính toán cho chuẩn
+    
     const numericPrice = typeof gia === 'string' ? parseInt(gia.replace(/[^0-9]/g, '')) : gia;
     
     const existingItem = cart.find(item => item.id === id);
@@ -76,7 +85,7 @@ function addToCart(id, ten, gia, hinh, qty = 1) {
     
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartBadge();
-    renderCart(); // Cập nhật nội dung Side Cart ngay lập tức
+    renderCart(); 
     const sideCartElement = document.getElementById('sideCart');
     if (sideCartElement) {
         const bsOffcanvas = new bootstrap.Offcanvas(sideCartElement);
@@ -84,7 +93,7 @@ function addToCart(id, ten, gia, hinh, qty = 1) {
     }
 }
 
-// 5. Hàm xóa sản phẩm khỏi giỏ
+
 function removeFromCart(index) {
     cart.splice(index, 1);
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -92,24 +101,24 @@ function removeFromCart(index) {
     renderCart();
 }
 
-// 6. Xử lý Thanh toán & Mua ngay (Dùng chung cho cả 2 trường hợp)
+
 function proceedToCheckout(type, productData = null) {
     if (type === 'single' && productData) {
-        // Lưu món mua ngay vào bộ nhớ tạm để thanh toán
+        
         localStorage.setItem('checkout_items', JSON.stringify([productData]));
     } else {
-        // Thanh toán toàn bộ giỏ hàng
+        
         if (cart.length === 0) {
             alert('Giỏ hàng của bạn đang trống!');
             return;
         }
         localStorage.setItem('checkout_items', JSON.stringify(cart));
     }
-    // Chuyển hướng đến trang điền thông tin khách hàng
+    
     window.location.href = '/thanh-toan';
 }
 
-// 7. Khi trang load xong thì khởi động các tính năng
+
 document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
     renderCart();

@@ -1,71 +1,38 @@
-var express = require('express');
-var router = express.Router();
-var bcrypt = require('bcryptjs');
-var TaiKhoan = require('../models/taikhoan');
+const express = require('express');
+const router = express.Router();
+const TaiKhoan = require('../models/taikhoan');
+const { requireAdmin } = require('../utils/auth');
 
-// GET: Danh sách tài khoản
-router.get('/', async (req, res) => {
-	var tk = await TaiKhoan.find();
-	res.render('taikhoan', {
-		title: 'Danh sách tài khoản',
-		taikhoan: tk
-	});
+router.use(requireAdmin);
+
+router.get('/', (req, res) => {
+    res.redirect('/admin/tai-khoan');
 });
 
-// GET: Thêm tài khoản
-router.get('/them', async (req, res) => {
-	res.render('taikhoan_them', {
-		title: 'Thêm tài khoản'
-	});
+router.get('/them', (req, res) => {
+    res.redirect('/admin/tai-khoan/them');
 });
 
-// POST: Thêm tài khoản
-router.post('/them', async (req, res) => {
-	var salt = bcrypt.genSaltSync(10);
-	var data = {
-		HoVaTen: req.body.HoVaTen,
-		Email: req.body.Email,
-		HinhAnh: req.body.HinhAnh,
-		TenDangNhap: req.body.TenDangNhap,
-		MatKhau: bcrypt.hashSync(req.body.MatKhau, salt)
-	};
-	await TaiKhoan.create(data);
-	res.redirect('/taikhoan');
+router.post('/them', (req, res) => {
+    res.redirect('/admin/tai-khoan/them');
 });
 
-// GET: Sửa tài khoản
-router.get('/sua/:id', async (req, res) => {
-	var id = req.params.id;
-	var tk = await TaiKhoan.findById(id);
-	res.render('taikhoan_sua', {
-		title: 'Sửa tài khoản',
-		taikhoan: tk
-	});
+router.get('/sua/:id', (req, res) => {
+    res.redirect(`/admin/tai-khoan/sua/${encodeURIComponent(req.params.id)}`);
 });
 
-// POST: Sửa tài khoản
-router.post('/sua/:id', async (req, res) => {
-	var id = req.params.id;
-	var salt = bcrypt.genSaltSync(10);
-	var data = {
-		HoVaTen: req.body.HoVaTen,
-		Email: req.body.Email,
-		HinhAnh: req.body.HinhAnh,
-		TenDangNhap: req.body.TenDangNhap,
-		QuyenHan: req.body.QuyenHan,
-		KichHoat: req.body.KichHoat
-	};
-	if(req.body.MatKhau)
-		data['MatKhau'] = bcrypt.hashSync(req.body.MatKhau, salt);
-	await TaiKhoan.findByIdAndUpdate(id, data);
-	res.redirect('/taikhoan');
+router.post('/sua/:id', (req, res) => {
+    res.redirect(`/admin/tai-khoan/sua/${encodeURIComponent(req.params.id)}`);
 });
 
-// GET: Xóa tài khoản
-router.get('/xoa/:id', async (req, res) => {
-	var id = req.params.id;
-	await TaiKhoan.findByIdAndDelete(id);
-	res.redirect('/taikhoan');
+router.delete('/xoa/:id', async (req, res, next) => {
+    try {
+        await TaiKhoan.findByIdAndDelete(req.params.id);
+        req.session.success = 'Đã xóa tài khoản thành công.';
+        return res.redirect('/admin/tai-khoan');
+    } catch (err) {
+        return next(err);
+    }
 });
 
 module.exports = router;

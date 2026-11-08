@@ -6,6 +6,7 @@
         <%- include('sidebar') %>
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4 bg-light">
             <h2 class="fw-bold text-uppercase mb-4">Thêm sách mới</h2>
+            <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-4">
                     <form action="/admin/sach/them" method="POST">

@@ -11,6 +11,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             <% } %>
+            <% if (error) { %>
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    <%= error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <% } %>
 
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                 <h1 class="h2 fw-bold text-uppercase">Danh sách tài khoản</h1>
@@ -47,12 +53,11 @@
                                 <a href="/admin/tai-khoan/sua/<%= tk._id %>" class="btn btn-sm btn-outline-warning me-1" title="Sửa">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="/admin/tai-khoan/xoa/<%= tk._id %>" 
-                                   class="btn btn-sm btn-outline-danger" 
-                                   title="Xóa"
-                                   onclick="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
-                                    <i class="bi bi-trash"></i>
-                                </a>
+                                <form action="/admin/tai-khoan/xoa/<%= tk._id %>?_method=DELETE" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản này?')">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Xóa">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         <% }) %>

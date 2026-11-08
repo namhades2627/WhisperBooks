@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var TheLoai = require('../models/theloai'); // Đã đổi tên model
+var TheLoai = require('../models/theloai'); 
+var { requireAdmin } = require('../utils/auth');
 
-// GET: Danh sách thể loại
+router.use(requireAdmin);
+
 router.get('/', async (req, res) => {
 	var tl = await TheLoai.find();
 	res.render('theloai', {
@@ -11,14 +13,14 @@ router.get('/', async (req, res) => {
 	});
 });
 
-// GET: Thêm thể loại
+
 router.get('/them', async (req, res) => {
 	res.render('theloai_them', {
 		title: 'Thêm thể loại sách'
 	});
 });
 
-// POST: Thêm thể loại
+
 router.post('/them', async (req, res) => {
 	var data = {
 		TenTheLoai: req.body.TenTheLoai
@@ -27,7 +29,7 @@ router.post('/them', async (req, res) => {
 	res.redirect('/theloai');
 });
 
-// GET: Sửa thể loại
+
 router.get('/sua/:id', async (req, res) => {
 	var id = req.params.id;
 	var tl = await TheLoai.findById(id);
@@ -37,7 +39,7 @@ router.get('/sua/:id', async (req, res) => {
 	});
 });
 
-// POST: Sửa thể loại
+
 router.post('/sua/:id', async (req, res) => {
 	var id = req.params.id;
 	var data = {
@@ -47,8 +49,8 @@ router.post('/sua/:id', async (req, res) => {
 	res.redirect('/theloai');
 });
 
-// GET: Xóa thể loại
-router.get('/xoa/:id', async (req, res) => {
+
+router.delete('/xoa/:id', async (req, res) => {
 	var id = req.params.id;
 	await TheLoai.findByIdAndDelete(id);
 	res.redirect('/theloai');

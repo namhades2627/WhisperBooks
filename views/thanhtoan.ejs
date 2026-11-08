@@ -58,12 +58,18 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Lấy dữ liệu từ localStorage (do hàm proceedToCheckout lưu vào)
         const items = JSON.parse(localStorage.getItem('checkout_items')) || [];
         const summaryList = document.getElementById('orderSummaryList');
         const totalDisplay = document.getElementById('finalTotal');
+        const escapeHtml = value => String(value).replace(/[&<>"']/g, character => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[character]);
 
-        if (items.length === 0) {
+        if (!Array.isArray(items) || items.length === 0) {
             alert("Đơn hàng của bạn đang trống!");
             window.location.href = '/';
             return;
@@ -76,9 +82,9 @@
             total += item.gia * item.quantity;
             html += `
                 <div class="d-flex align-items-center mb-3">
-                    <img src="/images/${item.hinh}" class="rounded me-3 shadow-sm" style="width: 60px; height: 80px; object-fit: cover;">
+                    <img src="/images/${encodeURIComponent(String(item.hinh || ''))}" class="rounded me-3 shadow-sm" style="width: 60px; height: 80px; object-fit: cover;">
                     <div class="flex-grow-1">
-                        <h6 class="mb-0 fw-bold">${item.ten}</h6>
+                        <h6 class="mb-0 fw-bold">${escapeHtml(item.ten)}</h6>
                         <small class="text-muted">${item.gia.toLocaleString()}đ x ${item.quantity}</small>
                     </div>
                     <span class="fw-bold">${(item.gia * item.quantity).toLocaleString()}đ</span>
@@ -93,16 +99,14 @@
   document.getElementById('orderForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const items = JSON.parse(localStorage.getItem('checkout_items'));
+    const items = JSON.parse(localStorage.getItem('checkout_items')) || [];
     
-    // Cách lấy dữ liệu này là an toàn và chính xác nhất
     const orderData = {
         HoVaTen: this.querySelector('[name="HoVaTen"]').value,
         SoDienThoai: this.querySelector('[name="SoDienThoai"]').value,
         Email: this.querySelector('[name="Email"]').value,
         DiaChi: document.getElementsByName('DiaChi')[0].value, 
-        DanhSachSanPham: items,
-        TongTien: document.getElementById('finalTotal').innerText
+        DanhSachSanPham: items
     };
 
     try {
@@ -119,7 +123,7 @@
             localStorage.removeItem('checkout_items');
             window.location.href = '/';
         } else {
-            alert('Máy chủ báo lỗi, vui lòng kiểm tra lại!');
+            alert(result.message || 'Máy chủ báo lỗi, vui lòng kiểm tra lại!');
         }
     } catch (error) {
         alert('Lỗi kết nối mạng!');

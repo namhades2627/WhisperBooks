@@ -1,57 +1,43 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const TheLoai = require('../models/theloai');
 const Sach = require('../models/sach');
 const DonHang = require('../models/donhang');
-const ChiTietDonHang = require('../models/chitiet_donhang');
 const sendOrderEmail = require('../utils/mailer');
-// GET: Trang chủ
-// GET: Trang chủ
-// GET: Trang chủ
-router.get('/', async (req, res) => {
+
+function escapeRegex(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+router.get('/', async (req, res, next) => {
     try {
-        // 1. Lấy Thể loại cho Navbar (Dùng song song để tốc độ nhanh hơn nếu cần)
         const tl = await TheLoai.find();
-
-        // 2. Lấy 4 cuốn mới nhất
         const dsSachMoi = await Sach.find({ KiemDuyet: 1 }).sort({ NgayNhap: -1 }).limit(4);
-
-        // 3. Lấy 4 cuốn nổi bật
         const dsSachNoiBat = await Sach.find({ KiemDuyet: 1 }).sort({ LuotXem: -1 }).limit(4);
-        
-        // 4. TRUYỀN BIẾN SANG EJS
-        res.render('index', { 
+        return res.render('index', {
             title: 'Trang chủ',
-            theloai: tl,       
-            sachMoi: dsSachMoi, 
-            sachNoiBat: dsSachNoiBat,
+            theloai: tl,
+            sachMoi: dsSachMoi,
+            sachNoiBat: dsSachNoiBat
         });
     } catch (err) {
-        console.log("Lỗi trang chủ:", err);
-        // CẬP NHẬT: Trong phần catch cũng cần truyền 'user' để header không bị lỗi undefined
-        res.render('index', { 
-            title: 'Trang chủ',
-            theloai: [], 
-            sachMoi: [], 
-            sachNoiBat: [],
-        });
+        return next(err);
     }
 });
 
-router.get('/the-loai/:id', async (req, res) => {
+router.get('/the-loai/:id', async (req, res, next) => {
     try {
         const theLoaiId = req.params.id;
-        
-        // Tìm tất cả sách có trường TheLoai khớp với ID truyền vào
-        const dsSach = await Sach.find({ 
+        if (!mongoose.Types.ObjectId.isValid(theLoaiId)) {
+            return res.status(404).send('Không tìm thấy thể loại.');
+        }
+        const dsSach = await Sach.find({
             TheLoai: theLoaiId,
-            KiemDuyet: 1 
+            KiemDuyet: 1
         }).populate('TheLoai');
-
-        // Tìm thông tin thể loại hiện tại để hiện tên lên tiêu đề trang
         const theLoaiHienTai = await TheLoai.findById(theLoaiId);
-
-        res.render('tat_ca_sach', {
+        return res.render('tat_ca_sach', {
             title: `Sách thể loại: ${theLoaiHienTai ? theLoaiHienTai.TenTheLoai : 'Không xác định'}`,
             sach: dsSach,
             current: 1,
@@ -59,73 +45,46 @@ router.get('/the-loai/:id', async (req, res) => {
             user: req.session.user || null
         });
     } catch (err) {
-        console.error(err);
-        res.redirect('/tat-ca-sach');
+        return next(err);
     }
 });
 
-router.get('/tim-kiem', async (req, res) => {
+router.get('/tim-kiem', async (req, res, next) => {
     try {
-        const keyword = req.query.search; // Lấy từ khóa người dùng nhập vào
-
-        // Nếu người dùng không nhập gì mà bấm tìm kiếm
-        if (!keyword || keyword.trim() === "") {
+        const keyword = typeof req.query.search === 'string' ? req.query.search.trim() : '';
+        if (!keyword) {
             return res.redirect('/tat-ca-sach');
         }
-
-        // Tìm kiếm linh hoạt với Regex
+        if (keyword.length > 100) {
+            return res.status(400).send('Từ khóa tìm kiếm quá dài.');
+        }
         const dsSach = await Sach.find({
-            // Tìm sách có TenSach chứa từ khóa keyword
-            TenSach: { $regex: keyword, $options: 'i' }, 
+            TenSach: { $regex: escapeRegex(keyword), $options: 'i' },
             KiemDuyet: 1
         }).populate('TheLoai');
-
-        // Trả kết quả về trang hiển thị (dùng chung giao diện tat_ca_sach)
-        res.render('tat_ca_sach', {
+        return res.render('tat_ca_sach', {
             title: `Kết quả tìm kiếm: ${keyword}`,
             sach: dsSach,
-            current: 1, // Reset về trang 1
-            pages: 1,   // Tạm thời hiển thị 1 trang kết quả
-            keyword: keyword // Gửi lại từ khóa để hiển thị trên giao diện nếu cần
+            current: 1,
+            pages: 1,
+            keyword
         });
     } catch (err) {
-        console.error("Lỗi tìm kiếm:", err);
-        res.redirect('/');
+        return next(err);
     }
 });
 
-// GET: Xem chi tiết sách
-router.get('/sach/:id', async (req, res) => {
+router.get('/tat-ca-sach', async (req, res, next) => {
     try {
-        const s = await Sach.findById(req.params.id);
-        
-        // Lấy danh sách đánh giá và "Populate" để lấy luôn tên người đánh giá
-        const dsDanhGia = await DanhGia.find({ Sach_id: req.params.id })
-                                      .populate('User_id', 'HoVaTen') // Chỉ lấy cột họ tên
-                                      .sort({ createdAt: -1 }); // Mới nhất hiện lên đầu
-
-        res.render('sach_chitiet', { 
-            s: s, 
-            dsDanhGia: dsDanhGia,
-            title: s.TenSach 
-        });
-    } catch (err) {
-        res.redirect('/');
-    }
-});
-
-router.get('/tat-ca-sach', async (req, res) => {
-    try {
-        const perPage = 12; 
-        const page = parseInt(req.query.page) || 1; 
-        let query = {};
-
-        // 1. Lọc theo Nhà cung cấp
+        const perPage = 12;
+        const requestedPage = Number.parseInt(req.query.page, 10);
+        const page = Number.isInteger(requestedPage) && requestedPage > 0
+            ? Math.min(requestedPage, 10000)
+            : 1;
+        const query = { KiemDuyet: 1 };
         if (req.query.ncc) {
-            query.NhaCungCap = req.query.ncc; 
+            query.NhaCungCap = String(req.query.ncc).slice(0, 100);
         }
-
-        // 2. Lọc theo Mức giá
         if (req.query.gia) {
             const mucGia = req.query.gia;
             if (mucGia === 'duoi100') query.GiaBan = { $lt: 100000 };
@@ -133,99 +92,142 @@ router.get('/tat-ca-sach', async (req, res) => {
             else if (mucGia === '300-500') query.GiaBan = { $gte: 300000, $lte: 500000 };
             else if (mucGia === 'tren500') query.GiaBan = { $gt: 500000 };
         }
-
-        // 3. Xử lý Sắp xếp
         let sortOption = { _id: -1 };
         const sortType = req.query.sort;
         if (sortType === 'gia-tang') sortOption = { GiaBan: 1 };
         else if (sortType === 'gia-giam') sortOption = { GiaBan: -1 };
         else if (sortType === 'a-z') sortOption = { TenSach: 1 };
         else if (sortType === 'moi-nhat') sortOption = { _id: -1 };
-
-        // 4. Thực hiện truy vấn có Phân trang
         const dsSach = await Sach.find(query)
             .populate('TheLoai')
             .sort(sortOption)
-            .skip((perPage * page) - perPage) // Bỏ qua số sách của các trang trước
-            .limit(perPage); // Chỉ lấy đúng số lượng sách quy định cho 1 trang
-
-        // 5. Đếm tổng số sách khớp với query để tính tổng số trang
+            .skip((perPage * page) - perPage)
+            .limit(perPage);
         const count = await Sach.countDocuments(query);
-
-        res.render('tat_ca_sach', {
+        return res.render('tat_ca_sach', {
             title: 'Tất cả sách',
             sach: dsSach,
             current: page,
-            pages: Math.ceil(count / perPage) // Tính tổng số trang (Ví dụ: 24/12 = 2 trang)
+            pages: Math.ceil(count / perPage)
         });
     } catch (err) {
-        console.error("Lỗi:", err);
-        res.redirect('/');
+        return next(err);
     }
 });
 
-// GET: Trang đăng ký
-router.get('/dangky', async (req, res) => {
-    const tl = await TheLoai.find();
-    res.render('dangky', { title: 'Đăng ký tài khoản', theloai: tl });
+
+router.get('/dangky', (req, res) => {
+    res.render('dangky', { title: 'Đăng ký tài khoản' });
 });
 
-router.get('/dangnhap', async (req, res) => {
-    const tl = await TheLoai.find();
-    res.render('dangnhap', { title: 'Đăng nhập', theloai: tl });
+router.get('/dangnhap', (req, res) => {
+    res.render('dangnhap', { title: 'Đăng nhập' });
 });
 
 router.get('/thanh-toan', (req, res) => {
     res.render('thanhtoan', { title: 'Thanh toán đơn hàng' });
 });
 
-// Route nhận đơn hàng (Kết nối với Admin)
+
 router.post('/dat-hang', async (req, res) => {
-   try {
-        const { HoVaTen, SoDienThoai, Email, DiaChi, DanhSachSanPham, TongTien } = req.body;
+    let session;
+    try {
+        if (!req.is('application/json')) {
+            return res.status(415).json({ success: false, message: 'Yêu cầu phải có định dạng JSON.' });
+        }
+        const { HoVaTen, SoDienThoai, Email, DiaChi, DanhSachSanPham } = req.body;
+        if (
+            typeof HoVaTen !== 'string' || !HoVaTen.trim() || HoVaTen.length > 120 ||
+            typeof SoDienThoai !== 'string' || !SoDienThoai.trim() || SoDienThoai.length > 30 ||
+            typeof Email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(Email) ||
+            typeof DiaChi !== 'string' || !DiaChi.trim() || DiaChi.length > 500 ||
+            !Array.isArray(DanhSachSanPham) || !DanhSachSanPham.length || DanhSachSanPham.length > 50
+        ) {
+            return res.status(400).json({ success: false, message: 'Thông tin đặt hàng không hợp lệ.' });
+        }
 
-        const chiTietDonHang = DanhSachSanPham.map(item => ({
-            SachID: item.id,
-            SoLuong: item.quantity,
-            Gia: item.gia
-        }));
+        const quantities = new Map();
+        for (const item of DanhSachSanPham) {
+            if (
+                !item || typeof item.id !== 'string' || !mongoose.Types.ObjectId.isValid(item.id) ||
+                !Number.isSafeInteger(item.quantity) || item.quantity < 1 || item.quantity > 99
+            ) {
+                return res.status(400).json({ success: false, message: 'Sản phẩm hoặc số lượng không hợp lệ.' });
+            }
+            quantities.set(item.id, (quantities.get(item.id) || 0) + item.quantity);
+            if (quantities.get(item.id) > 99) {
+                return res.status(400).json({ success: false, message: 'Số lượng đặt vượt quá giới hạn.' });
+            }
+        }
 
-        const soTien = parseInt(TongTien.replace(/[^0-9]/g, ''));
+        session = await mongoose.startSession();
+        let donHangMoi;
+        await session.withTransaction(async () => {
+            const ids = [...quantities.keys()];
+            const products = await Sach.find({ _id: { $in: ids }, KiemDuyet: 1 }).session(session);
+            if (products.length !== ids.length) {
+                const error = new Error('Một hoặc nhiều sách không còn khả dụng.');
+                error.statusCode = 409;
+                throw error;
+            }
 
-        const donHangMoi = new DonHang({
-            HoVaTen,
-            SoDienThoai,
-            Email,
-            DiaChi,
-            TongTien: soTien,
-            ChiTiet: chiTietDonHang,
-            TaiKhoan: req.session.user ? req.session.user._id : null
+            let tongTien = 0;
+            const chiTiet = products.map(product => {
+                const SoLuong = quantities.get(String(product._id));
+                if (product.SoLuong < SoLuong) {
+                    const error = new Error(`Sách "${product.TenSach}" không đủ tồn kho.`);
+                    error.statusCode = 409;
+                    throw error;
+                }
+                tongTien += product.GiaBan * SoLuong;
+                return { SachID: product._id, SoLuong, Gia: product.GiaBan };
+            });
+
+            if (!Number.isSafeInteger(tongTien) || tongTien <= 0) {
+                const error = new Error('Tổng tiền đơn hàng không hợp lệ.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            for (const item of chiTiet) {
+                const updated = await Sach.findOneAndUpdate(
+                    { _id: item.SachID, KiemDuyet: 1, SoLuong: { $gte: item.SoLuong } },
+                    { $inc: { SoLuong: -item.SoLuong } },
+                    { new: true, session }
+                );
+                if (!updated) {
+                    const error = new Error('Tồn kho vừa thay đổi. Vui lòng kiểm tra lại giỏ hàng.');
+                    error.statusCode = 409;
+                    throw error;
+                }
+            }
+
+            donHangMoi = new DonHang({
+                HoVaTen: HoVaTen.trim(),
+                SoDienThoai: SoDienThoai.trim(),
+                Email: Email.trim(),
+                DiaChi: DiaChi.trim(),
+                TongTien: tongTien,
+                ChiTiet: chiTiet,
+                TaiKhoan: req.session.user ? req.session.user._id : null
+            });
+            await donHangMoi.save({ session });
         });
 
-        // 1. Lưu đơn hàng
-        await donHangMoi.save();
-
-        // 2. Trừ số lượng kho
-        for (const item of DanhSachSanPham) {
-            await Sach.findByIdAndUpdate(item.id, {
-                $inc: { SoLuong: -item.quantity } 
-            });
+        if (process.env.MAIL_USER && process.env.MAIL_PASS) {
+            sendOrderEmail(Email.trim(), HoVaTen.trim(), donHangMoi._id, donHangMoi.TongTien)
+                .catch(err => console.error('Lỗi gửi email xác nhận:', err.message));
         }
-
-        // 3. Gửi email thông báo (Chạy ngầm, không dùng await để khách đỡ đợi)
-        if (Email) {
-            sendOrderEmail(Email, HoVaTen, donHangMoi._id, donHangMoi.TongTien)
-                .catch(e => console.error("Lỗi gửi mail ngầm:", e));
-        }
-
-        // 4. CHỈ TRẢ VỀ JSON MỘT LẦN DUY NHẤT TẠI ĐÂY
-        res.json({ success: true, message: 'Đặt hàng thành công!' });
-
+        return res.json({ success: true, message: 'Đặt hàng thành công!' });
     } catch (err) {
-        console.error("Lỗi đặt hàng:", err);
-        // Trả về lỗi nếu có biến cố
-        if (!res.headersSent) {
-            res.json({ success: false, message: 'Có lỗi xảy ra khi đặt hàng' });
+        console.error('Lỗi đặt hàng:', err);
+        return res.status(err.statusCode || 500).json({
+            success: false,
+            message: err.statusCode ? err.message : 'Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.'
+        });
+    } finally {
+        if (session) {
+            await session.endSession();
         }
     }
 });

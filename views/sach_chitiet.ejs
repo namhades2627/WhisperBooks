@@ -151,12 +151,16 @@
         }
     }
 
+    const bookData = <%- JSON.stringify({
+        id: String(s._id),
+        ten: s.TenSach,
+        gia: s.GiaBan,
+        hinh: s.HinhAnh || ''
+    }).replace(/</g, '\\u003c') %>;
+
     function getProductData() {
         return {
-            id: '<%= s._id %>',
-            ten: '<%= s.TenSach %>',
-            gia: parseInt('<%= s.GiaBan %>'),
-            hinh: '<%= s.HinhAnh %>',
+            ...bookData,
             quantity: parseInt(document.getElementById('soluong').value)
         };
     }
@@ -184,7 +188,6 @@
         window.location.href = '/dangnhap';
     }
 
-    // Xử lý ngôi sao đánh giá
     document.querySelectorAll('.star-item').forEach(star => {
         star.addEventListener('click', function() {
             let val = this.getAttribute('data-value');

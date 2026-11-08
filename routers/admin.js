@@ -1,13 +1,16 @@
 const express = require('express');
 const router = express.Router();
-// Nhớ kiểm tra đường dẫn tới thư mục models cho đúng
+const bcrypt = require('bcryptjs');
+const { requireAdmin } = require('../utils/auth');
+
 const Sach = require('../models/sach');
 const TaiKhoan = require('../models/taikhoan');
 const TheLoai = require('../models/theloai');
 const DonHang = require('../models/donhang');
 const DanhGia = require('../models/danhgia');
 
-// Quản lý sách
+router.use(requireAdmin);
+
 router.get('/sach', async (req, res) => {
     try {
         const s = await Sach.find().populate('TheLoai');
@@ -22,7 +25,7 @@ router.get('/sach', async (req, res) => {
     }
 });
 
-// 1. Trang Thêm Sách (GET)
+
 router.get('/sach/them', async (req, res) => {
     try {
         const tl = await TheLoai.find();
@@ -32,14 +35,14 @@ router.get('/sach/them', async (req, res) => {
     }
 });
 
-// 2. Xử lý Thêm Sách (POST)
+
 router.post('/sach/them', async (req, res) => {
     try {
-        console.log("Dữ liệu nhận được:", req.body); // Dòng này để debug xem dữ liệu có lên tới server không
-        
         const moi = new Sach({
             TenSach: req.body.TenSach,
             TheLoai: req.body.TheLoai,
+            NhaCungCap: req.body.NhaCungCap,
+            MoTa: req.body.MoTa,
             GiaBan: req.body.GiaBan,
             SoLuong: req.body.SoLuong,
             HinhAnh: req.body.HinhAnh || 'no-image.jpg'
@@ -50,14 +53,18 @@ router.post('/sach/them', async (req, res) => {
         res.redirect('/admin/sach');
     } catch (err) {
         console.error("Lỗi khi lưu sách:", err);
-        res.send("Lỗi rồi Nhựt Nam ơi: " + err.message); // Hiện lỗi thẳng lên màn hình để dễ sửa
+        req.session.error = 'Không thể thêm sách. Vui lòng kiểm tra thông tin.';
+        res.redirect('/admin/sach/them');
     }
 });
 
-// 3. Trang Sửa Sách (GET)
+
 router.get('/sach/sua/:id', async (req, res) => {
     try {
         const s = await Sach.findById(req.params.id);
+        if (!s) {
+            return res.status(404).send('Không tìm thấy sách.');
+        }
         const tl = await TheLoai.find();
         res.render('admin/sach_sua', { title: 'Sửa thông tin sách', item: s, dsTheLoai: tl });
     } catch (err) {
@@ -65,10 +72,19 @@ router.get('/sach/sua/:id', async (req, res) => {
     }
 });
 
-// 4. Xử lý Cập nhật Sách (POST)
+
 router.post('/sach/sua/:id', async (req, res) => {
     try {
-        await Sach.findByIdAndUpdate(req.params.id, req.body);
+        const { TenSach, TheLoai, NhaCungCap, MoTa, GiaBan, SoLuong, HinhAnh } = req.body;
+        await Sach.findByIdAndUpdate(req.params.id, {
+            TenSach,
+            TheLoai,
+            NhaCungCap,
+            MoTa,
+            GiaBan,
+            SoLuong,
+            HinhAnh
+        }, { runValidators: true });
         req.session.success = 'Cập nhật thông tin sách thành công!';
         res.redirect('/admin/sach');
     } catch (err) {
@@ -77,8 +93,8 @@ router.post('/sach/sua/:id', async (req, res) => {
     }
 });
 
-// 5. Xử lý Xóa Sách (GET)
-router.get('/sach/xoa/:id', async (req, res) => {
+
+router.delete('/sach/xoa/:id', async (req, res) => {
     try {
         await Sach.findByIdAndDelete(req.params.id);
         req.session.success = 'Đã xóa sách khỏi hệ thống!';
@@ -90,10 +106,10 @@ router.get('/sach/xoa/:id', async (req, res) => {
 });
 
 
-// Quản lý tài khoản
+
 router.get('/tai-khoan', async (req, res) => {
     try {
-        const tk = await TaiKhoan.find();
+        const tk = await TaiKhoan.find().select('-MatKhau');
         res.render('admin/taikhoan', { 
             title: 'Quản lý Tài khoản', 
             dsTaiKhoan: tk,
@@ -109,42 +125,51 @@ router.get('/tai-khoan/them', (req, res) => {
     res.render('admin/taikhoan_them', { title: 'Thêm tài khoản' });
 });
 
-// Xử lý THÊM tài khoản mới (POST)
+
 router.post('/tai-khoan/them', async (req, res) => {
     try {
-        // Lấy dữ liệu từ các ô input trong Form
+        
         const { HoVaTen, Email, TenDangNhap, MatKhau, SoDienThoai, QuyenHan } = req.body;
 
-        // Tạo một tài khoản mới từ Model
+        
+        if (typeof MatKhau !== 'string' || MatKhau.length < 8) {
+            req.session.error = 'Mật khẩu phải có ít nhất 8 ký tự.';
+            return res.redirect('/admin/tai-khoan/them');
+        }
+
         const taiKhoanMoi = new TaiKhoan({
-            HoVaTen: HoVaTen,
-            Email: Email,
-            TenDangNhap: TenDangNhap,
-            MatKhau: MatKhau, // Nhựt Nam nên dùng bcrypt mã hóa sau này cho bảo mật nhé
-            SoDienThoai: SoDienThoai,
-            QuyenHan: QuyenHan,
+            HoVaTen,
+            Email,
+            TenDangNhap,
+            MatKhau: await bcrypt.hash(MatKhau, 12),
+            SoDienThoai,
+            QuyenHan: QuyenHan === '1' || QuyenHan === 'admin' ? 1 : 0,
             KichHoat: 1
         });
 
-        // Lưu vào MongoDB
+        
         await taiKhoanMoi.save();
 
-        // Gán thông báo thành công và quay về trang danh sách
+        
         req.session.success = 'Đã thêm tài khoản mới thành công!';
         res.redirect('/admin/tai-khoan');
     } catch (err) {
         console.error("Lỗi khi thêm tài khoản:", err);
-        // Nếu lỗi do trùng TenDangNhap (vì bạn để unique: true)
-        res.send("Lỗi: Có thể tên đăng nhập đã tồn tại hoặc thiếu dữ liệu bắt buộc!");
+        
+        req.session.error = 'Không thể thêm tài khoản. Vui lòng kiểm tra dữ liệu và tên đăng nhập.';
+        res.redirect('/admin/tai-khoan/them');
     }
 });
 
 router.get('/tai-khoan/sua/:id', async (req, res) => {
     try {
         const tk = await TaiKhoan.findById(req.params.id);
+        if (!tk) {
+            return res.status(404).send('Không tìm thấy tài khoản.');
+        }
         res.render('admin/taikhoan_sua', { 
             title: 'Sửa tài khoản', 
-            item: tk // Truyền dữ liệu tài khoản vào biến 'item'
+            item: tk 
         });
     } catch (err) {
         res.redirect('/admin/tai-khoan');
@@ -155,21 +180,23 @@ router.post('/tai-khoan/sua/:id', async (req, res) => {
     try {
         const { HoVaTen, Email, SoDienThoai, QuyenHan, MatKhau } = req.body;
         
-        // Tạo đối tượng dữ liệu cập nhật
+        
         let dataUpdate = {
             HoVaTen: HoVaTen,
             Email: Email,
             SoDienThoai: SoDienThoai,
-            QuyenHan: QuyenHan
+            QuyenHan: QuyenHan === '1' || QuyenHan === 'admin' ? 1 : 0
         };
-
-        // Nếu người dùng có nhập mật khẩu mới thì mới cập nhật mật khẩu
+        
         if (MatKhau && MatKhau.trim() !== "") {
-            // Lưu ý: Nếu có dùng bcrypt thì nhớ mã hóa ở đây nhé Nhựt Nam
-            dataUpdate.MatKhau = MatKhau; 
+            if (MatKhau.length < 8) {
+                req.session.error = 'Mật khẩu phải có ít nhất 8 ký tự.';
+                return res.redirect('/admin/tai-khoan/sua/' + req.params.id);
+            }
+            dataUpdate.MatKhau = await bcrypt.hash(MatKhau, 12);
         }
 
-        await TaiKhoan.findByIdAndUpdate(req.params.id, dataUpdate);
+        await TaiKhoan.findByIdAndUpdate(req.params.id, dataUpdate, { runValidators: true });
         
         req.session.success = 'Cập nhật tài khoản thành công!';
         res.redirect('/admin/tai-khoan');
@@ -179,15 +206,15 @@ router.post('/tai-khoan/sua/:id', async (req, res) => {
     }
 });
 
-router.get('/tai-khoan/xoa/:id', async (req, res) => {
+router.delete('/tai-khoan/xoa/:id', async (req, res) => {
     try {
-        // Tìm và xóa tài khoản dựa vào ID trên đường dẫn
+        
         await TaiKhoan.findByIdAndDelete(req.params.id);
         
-        // Gán thông báo thành công
+        
         req.session.success = 'Đã xóa tài khoản thành công!';
         
-        // Quay lại trang danh sách tài khoản
+        
         res.redirect('/admin/tai-khoan');
     } catch (err) {
         console.error("Lỗi khi xóa:", err);
@@ -195,8 +222,8 @@ router.get('/tai-khoan/xoa/:id', async (req, res) => {
     }
 });
 
-//Quan lý đơn hàng
-// Hiển thị danh sách đơn hàng
+
+
 router.get('/don-hang', async (req, res) => {
     try {
         const dsDonHang = await DonHang.find().sort({ NgayDat: -1 });
@@ -211,7 +238,7 @@ router.get('/don-hang', async (req, res) => {
     }
 });
 
-// Xem chi tiết đơn hàng (Trả về dữ liệu JSON để hiện Modal hoặc render trang mới)
+
 router.get('/don-hang/chi-tiet/:id', async (req, res) => {
     try {
         const dh = await DonHang.findById(req.params.id).populate('ChiTiet.SachID');
@@ -220,9 +247,9 @@ router.get('/don-hang/chi-tiet/:id', async (req, res) => {
             return res.redirect('/admin/don-hang');
         }
 
-        // TRUYỀN ĐẦY ĐỦ BIẾN title VÀ item
+        
         res.render('admin/donhang_chitiet', { 
-            title: 'Quản lý Đơn hàng', // Để Sidebar không bị lỗi undefined
+            title: 'Quản lý Đơn hàng', 
             item: dh 
         });
     } catch (err) {
@@ -231,35 +258,38 @@ router.get('/don-hang/chi-tiet/:id', async (req, res) => {
     }
 });
 
-// Cập nhật trạng thái đơn hàng (POST)
+
 router.post('/don-hang/cap-nhat-trang-thai/:id', async (req, res) => {
    try {
-        const { TrangThai } = req.body;
-        // Ép kiểu TrangThai sang Number để khớp với Model DonHang
+        const TrangThai = Number(req.body.TrangThai);
+        if (![0, 1, 2, 3].includes(TrangThai)) {
+            req.session.error = 'Trạng thái đơn hàng không hợp lệ.';
+            return res.redirect('/admin/don-hang/chi-tiet/' + req.params.id);
+        }
         await DonHang.findByIdAndUpdate(req.params.id, { 
-            TrangThai: parseInt(TrangThai) 
-        });
+            TrangThai
+        }, { runValidators: true });
         res.redirect('/admin/don-hang/chi-tiet/' + req.params.id);
     } catch (err) {
         console.error(err);
         res.redirect('/admin/don-hang');
     }
 });
-//Quản lý doanh thu
+
 router.get('/doanh-thu', async (req, res) => {
     try {
-        // Thay vì tìm { TrangThai: 'Đã giao' }, bạn hãy dùng con số (ví dụ: 2)
+        
         const allOrders = await DonHang.find({ TrangThai: 2 }); 
         const tongDoanhThu = allOrders.reduce((sum, dh) => sum + dh.TongTien, 0);
 
-        // Đếm số đơn mới (Trạng thái 0 là Chờ xử lý)
+        
         const soDonMoi = await DonHang.countDocuments({ TrangThai: 0 });
 
         const startOfDay = new Date();
         startOfDay.setHours(0, 0, 0, 0);
         const ordersToday = await DonHang.find({
             NgayDat: { $gte: startOfDay },
-            TrangThai: 2 // Dùng số 2 thay vì chữ
+            TrangThai: 2 
         });
         
         const doanhThuHomNay = ordersToday.reduce((sum, dh) => sum + dh.TongTien, 0);
@@ -280,9 +310,9 @@ router.get('/doanh-thu', async (req, res) => {
 router.get('/danh-gia', async (req, res) => {
     try {
         const dsDanhGia = await DanhGia.find()
-            .populate('Sach_id', 'TenSach HinhAnh') // Lấy tên và hình ảnh sách
-            .populate('User_id', 'HoVaTen')        // Lấy tên người dùng
-            .sort({ createdAt: -1 });              // Mới nhất lên đầu
+            .populate('Sach_id', 'TenSach HinhAnh') 
+            .populate('User_id', 'HoVaTen')        
+            .sort({ createdAt: -1 });              
 
         res.render('admin/danhgia', {
             title: 'Quản lý đánh giá',
@@ -297,7 +327,7 @@ router.get('/danh-gia', async (req, res) => {
 router.delete('/xoa-danh-gia/:id', async (req, res) => {
     try {
         await DanhGia.findByIdAndDelete(req.params.id);
-        res.redirect('/admin/danh-gia'); // Quay lại trang danh sách
+        res.redirect('/admin/danh-gia'); 
     } catch (err) {
         console.error(err);
         res.redirect('back');

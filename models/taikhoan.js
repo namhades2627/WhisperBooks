@@ -6,7 +6,7 @@ var taiKhoanSchema = new mongoose.Schema({
     SoDienThoai: { type: String },
     TenDangNhap: { type: String, unique: true, required: true },
     MatKhau: { type: String, required: true },
-    QuyenHan: { type: Number, default: 0 },
+    QuyenHan: { type: String, default: '0' },
     KichHoat: { type: Number, default: 1 }
 });
 
